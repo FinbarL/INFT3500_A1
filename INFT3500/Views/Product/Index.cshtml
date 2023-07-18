@@ -1,0 +1,29 @@
+@model List<ProductViewModel>
+
+<h1>Products</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Description</th>
+        <th>Published</th>
+        <th>Genre</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>@product.ProductId</td>
+            <td>@product.Name</td>
+            <td>@product.Author</td>
+            <td>@product.Description</td>
+            <td>@product.Published.ToString()</td>
+            <td>@product.Genre.Name</td>
+        </tr>
+    }
+    </tbody>
+</table>
