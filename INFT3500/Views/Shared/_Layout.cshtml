@@ -1,6 +1,4 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -30,11 +28,27 @@
                     <li class="nav-item">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <p>Welcome, @User.Identity.Name!</p>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                         }
                         else
                         {
-                            <p>Guest user</p>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                        }
+                    </li>
+                    <li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="" asp-action="">Admin Page</a>
+                        }
+                        else
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="" asp-action="">Customer Page</a>
+                        }
+                    </li>
+                    <li class="nav-item">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <p class="nav-link text-dark">Welcome, @User.Identity.Name!</p>
                         }
                     </li>
                 </ul>

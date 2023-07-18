@@ -31,7 +31,7 @@ public class AccountController : Controller
 
             if (user != null && ValidatePassword(model.Password, user.Salt, user.HashPw))
             {
-                await Authenticate(user.UserName);
+                await Authenticate(user);
                 return RedirectToAction("UserInfo", "Account");
             }
             ModelState.AddModelError("", "Invalid username or password.");
@@ -47,11 +47,13 @@ public class AccountController : Controller
         var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         return View(user);
     }
-    private async Task Authenticate(string username)
+    private async Task Authenticate(User user)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username)
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Role, (bool)user.IsAdmin ? "Admin" : "Customer"),
+            new Claim(ClaimTypes.Email, user.Email),
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

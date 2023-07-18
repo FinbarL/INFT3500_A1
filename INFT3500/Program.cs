@@ -1,4 +1,3 @@
-using INFT3500;
 using INFT3500.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
