@@ -1,14 +1,20 @@
+using System.Net.Security;
+using System.Security.Claims;
 using INFT3500.Models;
 using INFT3500.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class AccountController : Controller
 {
-    private readonly StoreDbContext _dbContext; 
+    private readonly StoreDbContext _context;
 
-    public AccountController(StoreDbContext dbContext)
+    public AccountController(StoreDbContext context)
     {
-        _dbContext = dbContext;
+        _context = context;
     }
     
     public IActionResult Login()
@@ -17,38 +23,48 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (ModelState.IsValid)
         {
-            var user = _dbContext.Users.SingleOrDefault(u => u.UserName == model.UserName);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
             if (user != null && ValidatePassword(model.Password, user.Salt, user.HashPw))
             {
-                if (user.IsAdmin != null && user.IsAdmin.Value)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                await Authenticate(user.UserName);
+                return RedirectToAction("UserInfo", "Account");
             }
-            else
-            {
-                ModelState.AddModelError("", "Invalid username or password.");
+            ModelState.AddModelError("", "Invalid username or password.");
                 return View(model);
-            }
         }
-        else
-        {
-            ModelState.AddModelError("", "ModelState is invalid.");
-            return View(model);
-        }
+        ModelState.AddModelError("", "ModelState Invalid.");
+        return View(model);
     }
+    [Authorize]
+    public IActionResult UserInfo()
+    {
+        string username = User.Identity.Name;
+        var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+        return View(user);
+    }
+    private async Task Authenticate(string username)
+    {
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Name, username)
+        };
 
-    // Helper method to validate the password
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+    }
+    [HttpGet]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Index", "Home");
+    }
     private bool ValidatePassword(string password, string salt, string hashedPassword)
     {
         //Todo: add pw validation

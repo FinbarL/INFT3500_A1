@@ -1,0 +1,13 @@
+@model User
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>User Information</h2>
+
+<p>Username: @Model.UserName</p>
+<p>Email: @Model.Email</p>
+<p>Name: @Model.Name</p>
+<p>Is Admin: @Model.IsAdmin</p>

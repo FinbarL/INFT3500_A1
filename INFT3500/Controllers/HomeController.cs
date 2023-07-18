@@ -13,24 +13,20 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-    [Authorize(Roles = "Admin")]
+    /*[Authorize(Roles = "Admin")]*/
     public IActionResult AdminPage()
     {
         return View();
     }
 
-    [Authorize(Roles = "User")]
+    /*[Authorize(Roles = "User")]*/
     public IActionResult UserPage()
     {
         return View();
     }
     public IActionResult Index()
     {
-        if (!User.Identity.IsAuthenticated)
-        {
-            return RedirectToAction("Login", "Account");
-        }
-        return RedirectToAction("UserPage", "Home");
+        return RedirectToAction("Index", "Product");
     }
 
     public IActionResult Privacy()

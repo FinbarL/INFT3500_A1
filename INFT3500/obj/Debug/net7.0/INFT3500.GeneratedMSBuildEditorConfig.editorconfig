@@ -16,8 +16,16 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/UserInfo.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVc2VySW5mby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Home/AdminPage.cshtml]

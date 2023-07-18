@@ -9,7 +9,11 @@ builder.Services.AddAuthentication(options =>
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
-    .AddCookie();
+    .AddCookie("Cookies", config =>
+    {
+        config.Cookie.Name = "INFT3500.Cookie";
+        config.LoginPath = "/Account/Login";
+    });
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -26,18 +30,19 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+} else
+{
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
 
 app.UseAuthentication();
-
-app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();
