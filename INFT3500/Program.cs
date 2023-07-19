@@ -13,6 +13,11 @@ builder.Services.AddAuthentication(options =>
         config.Cookie.Name = "INFT3500.Cookie";
         config.LoginPath = "/Account/Login";
     });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole",
+        policy => policy.RequireRole("Admin"));
+});
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging(logging =>
 {

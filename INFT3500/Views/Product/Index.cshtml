@@ -2,12 +2,25 @@
 @using INFT3500.Models
 @model List<ProductViewModel>
 <h1>Products</h1>
-<form asp-controller="Product" asp-action="Index">
-    <p>
-        Title: <input type="text" name="SearchString" />
-        <input type="submit" value="Filter" />
-    </p>
-</form>
+<div class="container">
+    <div class="d-flex flex-rowc">
+        <div class="p-2">
+            <form asp-controller="Product" asp-action="Index">
+                <p>
+                    Search: <input type="text" name="SearchString"/>
+                    <input type="submit" value="Filter"/>
+                </p>
+            </form>
+        </div>
+        <span class="p-2">
+            <a asp-controller="Product"
+               asp-action="AddItem"
+               class="btn btn-success">
+                Add Item
+            </a>
+        </span>
+    </div>
+</div>
 <table>
     <thead>
     <tr>
@@ -16,27 +29,58 @@
         <th>Author</th>
         <th>Published</th>
         <th>Genre</th>
-        <th>Quantity</th>
-        <th>Add To Cart</th>
+        <th>Qty</th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
+
     @foreach (var product in Model)
     {
-
-    <tr>
-        <td>@product.ProductId</td>
-        <td>@product.Name</td>
-        <td>@product.Author</td>
-        <td>@product.Published.ToString()</td>
-        <td>@product.Genre.Name</td>
-        <td>@product.Quantity.ToString()</td>
-        <td>        <a asp-controller="Product"
-                       asp-action="Details"
-                       asp-route-id="@product.ProductId"
-                       class="btn btn-success">View Details</a></td>
-    </tr>
-
+        <tr>
+            <td>@product.ProductId</td>
+            <td>@product.Name</td>
+            <td>@product.Author</td>
+            <td>@product.Published.ToString()</td>
+            <td>@product.Genre.Name</td>
+            <td>@product.Quantity.ToString()</td>
+            <td>
+                <div class="container">
+                    <div class="d-flex flex-row">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="p-2">
+                                <a asp-controller="Product"
+                                   asp-action="Details"
+                                   asp-route-id="@product.ProductId"
+                                   class="btn btn-warning">
+                                    Edit Item
+                                </a>
+                            </div>
+                            <div class="p-2">
+                                <a asp-controller="Product"
+                                   asp-action="Details"
+                                   asp-route-id="@product.ProductId"
+                                   class="btn btn-danger">
+                                    Remove Item
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-2">
+                                <a asp-controller="Product"
+                                   asp-action="Details"
+                                   asp-route-id="@product.ProductId"
+                                   class="btn btn-success">
+                                    View Details
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </td>
+        </tr>
     }
     @if (Model.Count == 0)
     {

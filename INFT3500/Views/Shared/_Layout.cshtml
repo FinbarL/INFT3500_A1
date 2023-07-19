@@ -19,40 +19,40 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
+                <ul class="navbar-nav flex-grow-1 mr-auto">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
-                    <li class="nav-item">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                        }
-                        else
-                        {
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                        }
-                    </li>
-                    <li>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a class="nav-link text-dark" asp-area="" asp-controller="" asp-action="">Admin Page</a>
-                        }
-                        else
-                        {
-                            <a class="nav-link text-dark" asp-area="" asp-controller="" asp-action="">Customer Page</a>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <p class="nav-link text-dark">Welcome, @User.Identity.Name!</p>
-                        }
-                    </li>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            @if (User.IsInRole("Admin"))
+                            {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdminPage">Admin Page</a>
+                            }
+                            else
+                            {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="UserPage">User Page</a>
+                            }
+                        </li>
+                    }
+
                 </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span class="navbar-text">
+                        Welcome, @User.Identity.Name!
+                    </span>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                }
+                else
+                {
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                }
             </div>
         </div>
     </nav>

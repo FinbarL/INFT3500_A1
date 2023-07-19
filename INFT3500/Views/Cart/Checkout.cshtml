@@ -1,8 +1,35 @@
-@model List<Product>
+@model List<CartViewModel>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Checkout";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<h2>Checkout</h2>
+@if (Model == null || Model.Count == 0)
+{
+    <tr>
+        <td colspan="5">No items in cart</td>
+    </tr>
+}
+else
+{
+    foreach (var cartItem in Model)
+    {
+        <tr>
+            <td>@cartItem.Product.Id</td>
+            <td>@cartItem.Product.Name</td>
+            <td>@cartItem.Product.Author</td>
+            <td>@cartItem.Product.Published.ToString()</td>
+            <td>@cartItem.Quantity</td>
+            <td class="addToCart">
+                <a asp-controller="Cart"
+                   asp-action="RemoveFromCart"
+                   asp-route-id="@cartItem.Product.Id"
+                   class="btn btn-danger">
+                    Remove
+                </a>
+            </td>
+        </tr>
+    }
+}

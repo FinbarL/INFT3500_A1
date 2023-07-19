@@ -1,5 +1,6 @@
 using INFT3500.Models;
 using INFT3500.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 namespace INFT3500.Controllers;
 
@@ -45,6 +46,17 @@ public class ProductController : Controller
         return await products.ToListAsync();
     }
 
+    [Authorize(Policy = "RequireAdminRole")]
+    public IActionResult AddItem()
+    {
+        return View();
+    }
+    [Authorize(Policy = "RequireAdminRole")]
+    [HttpPost]
+    public IActionResult AddItem(Product product)
+    {
+        return View();
+    }
     private static ProductViewModel ProductToViewModel(Product product)
     {
 

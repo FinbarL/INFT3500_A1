@@ -8,6 +8,5 @@ public class ProductViewModel
     public string? Description { get; set; }
     public DateOnly? Published { get; set; }
     public GenreViewModel Genre { get; set; }
-    
     public int Quantity { get; set; }
 }

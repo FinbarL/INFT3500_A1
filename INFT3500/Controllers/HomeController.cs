@@ -13,22 +13,22 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-    /*[Authorize(Roles = "Admin")]*/
+    [Authorize(Policy = "RequireAdminRole")]
     public IActionResult AdminPage()
     {
         return View();
     }
-
-    /*[Authorize(Roles = "User")]*/
+    [Authorize(Roles = "Customer")]
     public IActionResult UserPage()
     {
         return View();
     }
+    [Authorize]
     public IActionResult Index()
     {
         return RedirectToAction("Index", "Product");
     }
-
+    [Authorize]
     public IActionResult Privacy()
     {
         return View();
