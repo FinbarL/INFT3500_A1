@@ -1,0 +1,48 @@
+@using Microsoft.AspNetCore.Identity
+@using INFT3500.Models
+@model List<Product>
+<h1>Your Cart</h1>
+<table>
+    <thead>
+    <tr>
+        <th>PID</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Published</th>
+        <th>Remove?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- handle null case --> 
+    @if (Model == null || Model.Count == 0)
+    {
+        <tr>
+            <td colspan="5">No items in cart</td>
+        </tr>
+    } 
+    else {
+        foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+                <td>@product.Author</td>
+                <td>@product.Published.ToString()</td>
+                <td class="addToCart">
+                    <a asp-controller="Cart"
+                       asp-action="RemoveFromCart"
+                       asp-route-id="@product.Id"
+                       class="link-info">
+                        Remove From Cart
+                    </a>
+                </td>
+            </tr>
+        }
+    }
+    
+    @if (Model is {Count: > 0 })
+    {
+        <button>Proceed To Checkout</button>
+    }
+    </tbody>
+</table>
