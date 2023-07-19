@@ -30,7 +30,6 @@ public class ProductController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var productViewModel = await GetProductById(id);
-        Console.WriteLine(productViewModel);
         return View(productViewModel);
     }
 
@@ -51,7 +50,6 @@ public class ProductController : Controller
 
         if (product == null)
         {
-            Console.WriteLine("ERROR, NO PRODUCT!");
             throw new ArgumentNullException(nameof(product));
         }
         var productViewModel = new ProductViewModel
@@ -68,7 +66,6 @@ public class ProductController : Controller
             },
             Quantity = product.Stocktakes.Select(s => s.Quantity).Sum() ?? 0
         };
-        Console.WriteLine("MODEL=" + productViewModel.Author);
         return productViewModel;
     }
     private async Task<ProductViewModel> GetProductById(int id)
@@ -78,8 +75,7 @@ public class ProductController : Controller
             .Where(p => p.Id == id)
             .Include(p => p.Stocktakes)
             .Select(p => ProductToViewModel(p)).First();
-        Console.WriteLine("WE GOOD!");
-            return productViewModel;
+        return productViewModel;
     }
 
 }
