@@ -2,28 +2,41 @@
 @using INFT3500.Models
 @model List<ProductViewModel>
 <h1>Products</h1>
+<form asp-controller="Product" asp-action="Index">
+    <p>
+        Title: <input type="text" name="SearchString" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
 <table>
     <thead>
     <tr>
         <th>Product ID</th>
         <th>Name</th>
         <th>Author</th>
-        <th>Description</th>
         <th>Published</th>
         <th>Genre</th>
+        <th>Quantity</th>
+        <th>Add To Cart</th>
     </tr>
     </thead>
     <tbody>
     @foreach (var product in Model)
     {
-        <tr>
-            <td>@product.ProductId</td>
-            <td>@product.Name</td>
-            <td>@product.Author</td>
-            <td>@product.Description</td>
-            <td>@product.Published.ToString()</td>
-            <td>@product.Genre.Name</td>
-        </tr>
+
+    <tr>
+        <td>@product.ProductId</td>
+        <td>@product.Name</td>
+        <td>@product.Author</td>
+        <td>@product.Published.ToString()</td>
+        <td>@product.Genre.Name</td>
+        <td>@product.Quantity.ToString()</td>
+        <td>        <a asp-controller="Product"
+                       asp-action="Details"
+                       asp-route-id="@product.ProductId"
+                       class="link-info">View Details</a></td>
+    </tr>
+
     }
     </tbody>
 </table>

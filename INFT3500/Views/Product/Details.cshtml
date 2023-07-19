@@ -1,0 +1,20 @@
+@model ProductViewModel
+
+<h3 class="my-5">
+    @Model.Name
+</h3>
+
+<div class="row gx-5">
+    <div class="col-7">
+        <p>Description: @Model.Description</p>
+        <p>Genre: @Model.Genre.Name</p>
+        <p>Published: @Model.Published</p>
+        <p>Quantity: @Model.Quantity</p>
+        <div class="addToCart">
+            <a asp-controller="Cart"
+               asp-action="AddToCart"
+               asp-route-id="@Model.ProductId"
+               class="link-info">Add To Cart</a>
+        </div>
+    </div>
+</div>

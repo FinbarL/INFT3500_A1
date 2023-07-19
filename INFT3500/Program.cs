@@ -14,6 +14,11 @@ builder.Services.AddAuthentication(options =>
         config.LoginPath = "/Account/Login";
     });
 builder.Services.AddControllersWithViews();
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
+});
 
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
