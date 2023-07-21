@@ -15,7 +15,7 @@ public partial class Product
 
     public int? Genre { get; set; }
 
-    public int? SubGenre { get; set; }
+    public string? SubGenre { get; set; }
 
     public DateOnly? Published { get; set; }
 

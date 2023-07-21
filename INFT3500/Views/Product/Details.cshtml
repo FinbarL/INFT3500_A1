@@ -8,8 +8,10 @@
     <div class="col-7">
         <p>Description: @Model.Description</p>
         <p>Genre: @Model.Genre.Name</p>
+        <p>Sub Genre: @Model.SubGenre</p>
         <p>Published: @Model.Published</p>
         <p>Quantity: @Model.Quantity</p>
+        <p>Price: @Model.Price</p>
         <div class="addToCart">
             <a asp-controller="Cart"
                asp-action="AddToCart"
