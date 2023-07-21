@@ -2,6 +2,8 @@ using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+
 namespace INFT3500.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
@@ -38,10 +40,10 @@ public class ProductController : Controller
     {
         var products = _dbContext.Products
             .Include(p => p.GenreNavigation)
+            .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
             .Where(p => p.Author != null && p.Name != null &&
                         (searchString == null || searchString == "" ||
-                         p.Name.Contains(searchString) || p.Author.Contains(searchString)))
-            .Include(p => p.Stocktakes)
+                         p.Name.Contains(searchString) || p.Author.Contains(searchString)) && p.Stocktakes.Count(s => s.Source.ExternalLink != null) > 0)
             .Select(p => ProductToViewModel(p));
         return await products.ToListAsync();
     }
@@ -76,7 +78,9 @@ public class ProductController : Controller
                 GenreId = product.GenreNavigation != null ? product.GenreNavigation.GenreId : 0,
                 Name = product.GenreNavigation.Name != null ? product.GenreNavigation.Name : String.Empty,
             },
-            Quantity = product.Stocktakes.Select(s => s.Quantity).Sum() ?? 0
+            SubGenre = product.SubGenre,
+            Quantity = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0, 
+            Price = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Price).FirstOrDefault() ?? 0,
         };
         return productViewModel;
     }
@@ -84,8 +88,8 @@ public class ProductController : Controller
     {
         var productViewModel = _dbContext.Products
             .Include(p => p.GenreNavigation)
+            .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
             .Where(p => p.Id == id)
-            .Include(p => p.Stocktakes)
             .Select(p => ProductToViewModel(p)).First();
         return productViewModel;
     }
