@@ -22,60 +22,6 @@ namespace INFT3500.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("INFT3500.Models.BookGenre", b =>
-                {
-                    b.Property<int>("SubGenreId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("subGenreID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubGenreId"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("SubGenreId");
-
-                    b.ToTable("Book_genre", (string)null);
-                });
-
-            modelBuilder.Entity("INFT3500.Models.BookGenreNew", b =>
-                {
-                    b.Property<int>("SubGenreId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("subGenreID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubGenreId"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("SubGenreId");
-
-                    b.ToTable("Book_genre NEW", (string)null);
-                });
-
-            modelBuilder.Entity("INFT3500.Models.GameGenre", b =>
-                {
-                    b.Property<int>("SubGenreId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("subGenreID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubGenreId"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("SubGenreId");
-
-                    b.ToTable("Game_genre", (string)null);
-                });
-
             modelBuilder.Entity("INFT3500.Models.Genre", b =>
                 {
                     b.Property<int>("GenreId")
@@ -89,24 +35,6 @@ namespace INFT3500.Migrations
                     b.HasKey("GenreId");
 
                     b.ToTable("Genre", (string)null);
-                });
-
-            modelBuilder.Entity("INFT3500.Models.MovieGenre", b =>
-                {
-                    b.Property<int>("SubGenreId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("subGenreID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubGenreId"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("SubGenreId");
-
-                    b.ToTable("Movie_genre", (string)null);
                 });
 
             modelBuilder.Entity("INFT3500.Models.Order", b =>
@@ -144,39 +72,6 @@ namespace INFT3500.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("INFT3500.Models.Patron", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("HashPw")
-                        .HasMaxLength(64)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(64)")
-                        .HasColumnName("HashPW");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Salt")
-                        .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Patrons");
-                });
-
             modelBuilder.Entity("INFT3500.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -210,8 +105,8 @@ namespace INFT3500.Migrations
                     b.Property<DateOnly?>("Published")
                         .HasColumnType("date");
 
-                    b.Property<int?>("SubGenre")
-                        .HasColumnType("int")
+                    b.Property<string>("SubGenre")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("subGenre");
 
                     b.HasKey("Id");
@@ -329,9 +224,6 @@ namespace INFT3500.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int?>("PatronId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -351,9 +243,14 @@ namespace INFT3500.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("UserName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("UserName");
+
                     b.HasKey("CustomerId");
 
-                    b.HasIndex("PatronId");
+                    b.HasIndex("UserName");
 
                     b.ToTable("TO", (string)null);
                 });
@@ -377,6 +274,10 @@ namespace INFT3500.Migrations
                     b.Property<bool?>("IsAdmin")
                         .HasColumnType("bit")
                         .HasColumnName("isAdmin");
+
+                    b.Property<bool?>("IsStaff")
+                        .HasColumnType("bit")
+                        .HasColumnName("isStaff");
 
                     b.Property<string>("Name")
                         .HasMaxLength(255)
@@ -473,12 +374,12 @@ namespace INFT3500.Migrations
 
             modelBuilder.Entity("INFT3500.Models.To", b =>
                 {
-                    b.HasOne("INFT3500.Models.Patron", "Patron")
-                        .WithMany("Tos")
-                        .HasForeignKey("PatronId")
-                        .HasConstraintName("FK_TO_Patrons");
+                    b.HasOne("INFT3500.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserName")
+                        .HasConstraintName("FK_TO_Users");
 
-                    b.Navigation("Patron");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("INFT3500.Models.Genre", b =>
@@ -486,11 +387,6 @@ namespace INFT3500.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Sources");
-                });
-
-            modelBuilder.Entity("INFT3500.Models.Patron", b =>
-                {
-                    b.Navigation("Tos");
                 });
 
             modelBuilder.Entity("INFT3500.Models.Product", b =>

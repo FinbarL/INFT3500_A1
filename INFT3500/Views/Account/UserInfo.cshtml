@@ -11,3 +11,9 @@
 <p>Email: @Model.Email</p>
 <p>Name: @Model.Name</p>
 <p>Is Admin: @Model.IsAdmin</p>
+<p>Is Staff: @Model.IsStaff</p>
+<p>Claims:</p>
+@foreach (var claim in User.Claims)
+{
+    <p> @claim.ToString()</p>
+}

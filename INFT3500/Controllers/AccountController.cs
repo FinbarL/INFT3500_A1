@@ -50,12 +50,28 @@ public class AccountController : Controller
     }
     private async Task Authenticate(User user)
     {
-        var claims = new[]
+
+
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, (bool)user.IsAdmin ? "Admin" : "Customer"),
-            new Claim(ClaimTypes.Email, user.Email ?? String.Empty),
+            new Claim(ClaimTypes.Email, user.Email ?? String.Empty)
         };
+
+        if (user.IsAdmin == true)
+        {
+            Console.WriteLine("Test");
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+        else if (user.IsStaff == true)
+        {
+            Console.WriteLine("Test");
+            claims.Add(new Claim(ClaimTypes.Role, "Staff"));
+        }
+        else
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Customer"));
+        }
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);

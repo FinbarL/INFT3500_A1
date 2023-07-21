@@ -15,7 +15,7 @@ public partial class User
     public string? Name { get; set; }
 
     public bool? IsAdmin { get; set; }
-
+    public bool? IsStaff { get; set; }
     public string? Salt { get; set; }
 
     public string? HashPw { get; set; }

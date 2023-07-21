@@ -14,21 +14,10 @@ public partial class StoreDbContext : DbContext
         : base(options)
     {
     }
-
-    public virtual DbSet<BookGenre> BookGenres { get; set; }
-
-    public virtual DbSet<BookGenreNew> BookGenreNews { get; set; }
-
-    public virtual DbSet<GameGenre> GameGenres { get; set; }
-
+    
     public virtual DbSet<Genre> Genres { get; set; }
 
-    public virtual DbSet<MovieGenre> MovieGenres { get; set; }
-
     public virtual DbSet<Order> Orders { get; set; }
-
-    public virtual DbSet<Patron> Patrons { get; set; }
-
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductsInOrder> ProductsInOrders { get; set; }
@@ -43,35 +32,6 @@ public partial class StoreDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BookGenre>(entity =>
-        {
-            entity.HasKey(e => e.SubGenreId);
-
-            entity.ToTable("Book_genre");
-
-            entity.Property(e => e.SubGenreId).HasColumnName("subGenreID");
-            entity.Property(e => e.Name).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<BookGenreNew>(entity =>
-        {
-            entity.HasKey(e => e.SubGenreId);
-
-            entity.ToTable("Book_genre NEW");
-
-            entity.Property(e => e.SubGenreId).HasColumnName("subGenreID");
-            entity.Property(e => e.Name).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<GameGenre>(entity =>
-        {
-            entity.HasKey(e => e.SubGenreId);
-
-            entity.ToTable("Game_genre");
-
-            entity.Property(e => e.SubGenreId).HasColumnName("subGenreID");
-            entity.Property(e => e.Name).HasMaxLength(50);
-        });
 
         modelBuilder.Entity<Genre>(entity =>
         {
@@ -82,17 +42,7 @@ public partial class StoreDbContext : DbContext
                 .HasColumnName("genreID");
             entity.Property(e => e.Name).HasMaxLength(50);
         });
-
-        modelBuilder.Entity<MovieGenre>(entity =>
-        {
-            entity.HasKey(e => e.SubGenreId);
-
-            entity.ToTable("Movie_genre");
-
-            entity.Property(e => e.SubGenreId).HasColumnName("subGenreID");
-            entity.Property(e => e.Name).HasMaxLength(50);
-        });
-
+        
         modelBuilder.Entity<Order>(entity =>
         {
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
@@ -105,22 +55,7 @@ public partial class StoreDbContext : DbContext
                 .HasForeignKey(d => d.Customer)
                 .HasConstraintName("FK_Orders_TO");
         });
-
-        modelBuilder.Entity<Patron>(entity =>
-        {
-            entity.HasKey(e => e.UserId);
-
-            entity.Property(e => e.UserId).HasColumnName("UserID");
-            entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.HashPw)
-                .HasMaxLength(64)
-                .IsUnicode(false)
-                .HasColumnName("HashPW");
-            entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Salt)
-                .HasMaxLength(32)
-                .IsUnicode(false);
-        });
+        
 
         modelBuilder.Entity<Product>(entity =>
         {
@@ -192,6 +127,7 @@ public partial class StoreDbContext : DbContext
             entity.ToTable("TO");
 
             entity.Property(e => e.CustomerId).HasColumnName("customerID");
+            entity.Property(e => e.UserName).HasColumnName("UserName").HasMaxLength(50);
             entity.Property(e => e.CardNumber).HasMaxLength(50);
             entity.Property(e => e.CardOwner).HasMaxLength(50);
             entity.Property(e => e.Cvv).HasColumnName("CVV");
@@ -203,16 +139,17 @@ public partial class StoreDbContext : DbContext
             entity.Property(e => e.State).HasMaxLength(50);
             entity.Property(e => e.StreetAddress).HasMaxLength(255);
             entity.Property(e => e.Suburb).HasMaxLength(50);
-
-            entity.HasOne(d => d.Patron).WithMany(p => p.Tos)
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserName)
+                .HasConstraintName("FK_TO_Users");
+            /*entity.HasOne(d => d.User).WithMany(p => p.)
                 .HasForeignKey(d => d.PatronId)
-                .HasConstraintName("FK_TO_Patrons");
+                .HasConstraintName("FK_TO_Patrons");*/
         });
 
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserName).HasName("PK_Users");
-
             entity.ToTable("User");
 
             entity.Property(e => e.UserName).HasMaxLength(50);
@@ -222,6 +159,7 @@ public partial class StoreDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("HashPW");
             entity.Property(e => e.IsAdmin).HasColumnName("isAdmin");
+            entity.Property(e => e.IsStaff).HasColumnName("isStaff");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Salt)
                 .HasMaxLength(32)
