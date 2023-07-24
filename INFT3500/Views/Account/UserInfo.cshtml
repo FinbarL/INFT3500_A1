@@ -11,3 +11,12 @@
 <p>Email: @Model.Email</p>
 <p>Name: @Model.Name</p>
 <p>Is Admin: @Model.IsAdmin</p>
+<p>Is Staff: @Model.IsStaff</p>
+<p>Claims:</p>
+<div class="updateUser">
+    <a asp-controller="Account"
+       asp-action="UpdateUser"
+       asp-route-id="@Model.UserName"
+       method="get"
+       class="btn btn-success">Update Details</a>
+</div> 

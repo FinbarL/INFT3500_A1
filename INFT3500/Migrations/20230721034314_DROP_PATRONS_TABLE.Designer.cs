@@ -4,6 +4,7 @@ using INFT3500.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace INFT3500.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230721034314_DROP_PATRONS_TABLE")]
+    partial class DROP_PATRONS_TABLE
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,6 +73,39 @@ namespace INFT3500.Migrations
                     b.HasIndex("Customer");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("INFT3500.Models.Patron", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("UserID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("HashPw")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("HashPW");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Salt")
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Patrons");
                 });
 
             modelBuilder.Entity("INFT3500.Models.Product", b =>
@@ -224,6 +260,9 @@ namespace INFT3500.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(5)");
 
+                    b.Property<int?>("PatronId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -243,14 +282,9 @@ namespace INFT3500.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("UserName");
-
                     b.HasKey("CustomerId");
 
-                    b.HasIndex("UserName");
+                    b.HasIndex("PatronId");
 
                     b.ToTable("TO", (string)null);
                 });
@@ -274,10 +308,6 @@ namespace INFT3500.Migrations
                     b.Property<bool?>("IsAdmin")
                         .HasColumnType("bit")
                         .HasColumnName("isAdmin");
-
-                    b.Property<bool?>("IsStaff")
-                        .HasColumnType("bit")
-                        .HasColumnName("isStaff");
 
                     b.Property<string>("Name")
                         .HasMaxLength(255)
@@ -374,12 +404,12 @@ namespace INFT3500.Migrations
 
             modelBuilder.Entity("INFT3500.Models.To", b =>
                 {
-                    b.HasOne("INFT3500.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
-                        .HasConstraintName("FK_TO_Users");
+                    b.HasOne("INFT3500.Models.Patron", "Patron")
+                        .WithMany("Tos")
+                        .HasForeignKey("PatronId")
+                        .HasConstraintName("FK_TO_Patrons");
 
-                    b.Navigation("User");
+                    b.Navigation("Patron");
                 });
 
             modelBuilder.Entity("INFT3500.Models.Genre", b =>
@@ -387,6 +417,11 @@ namespace INFT3500.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Sources");
+                });
+
+            modelBuilder.Entity("INFT3500.Models.Patron", b =>
+                {
+                    b.Navigation("Tos");
                 });
 
             modelBuilder.Entity("INFT3500.Models.Product", b =>

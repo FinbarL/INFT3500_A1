@@ -51,7 +51,9 @@ public class ProductController : Controller
     [Authorize(Policy = "RequireAdminRole")]
     public IActionResult AddItem()
     {
-        return View();
+        var model = new AddProductViewModel();
+        model.Genre = 1;
+        return View(model);
     }
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]

@@ -7,7 +7,7 @@ public partial class To
 {
     public int CustomerId { get; set; }
 
-    public int? PatronId { get; set; }
+    public string? UserName { get; set; }
 
     public string Email { get; set; } = null!;
 
@@ -31,5 +31,5 @@ public partial class To
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual Patron? Patron { get; set; }
+    public virtual User? User { get; set; }
 }

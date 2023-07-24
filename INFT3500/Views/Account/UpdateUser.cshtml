@@ -1,0 +1,57 @@
+@model UpdateUserViewModel
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "_Layout";
+}
+<h2>Update User</h2>
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Account" asp-action="UpdateUser" method="post">
+            @Html.AntiForgeryToken()
+            @*Make text box for username but always disabled and sends data when submit*@
+            <div class="form-group">
+                <label asp-for="UserName">Username</label>
+                <input readonly asp-for="UserName" class="form-control"/>
+            <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name">Name</label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            @if (User.IsInRole("Admin") && Model.UserName != User.Identity.Name)
+            {
+                <div class="form-group">
+                    <label asp-for="IsAdmin">Is Admin?</label>
+                    <input asp-for="IsAdmin" />
+                    <span asp-validation-for="IsAdmin" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsStaff">IsStaff?</label>
+                    <input asp-for="IsStaff"/>
+                    <span asp-validation-for="IsStaff" class="text-danger"></span>
+                </div>
+            } else
+            {
+                <div class="form-group">
+                    <label asp-for="IsAdmin">Is Admin?</label>
+                    <input asp-for="IsAdmin" onclick="return false;"/>
+                    <span asp-validation-for="IsAdmin" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsStaff">IsStaff?</label>
+                    <input asp-for="IsStaff"  onclick="return false;"/>
+                    <span asp-validation-for="IsStaff" class="text-danger"></span>
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary mt-3">Update Details</button>
+        </form>
+    </div>
+</div>
