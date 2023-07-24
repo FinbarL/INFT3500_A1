@@ -107,7 +107,7 @@ public class AccountController : Controller
                 await Authenticate(user);
                 return RedirectToAction("UserInfo", "Account");
             }
-            ModelState.AddModelError("", "Invalid username or password.");
+            ModelState.AddModelError("UserName", "Invalid username or password.");
                 return View(model);
         }
         ModelState.AddModelError("", "ModelState Invalid.");
@@ -137,12 +137,14 @@ public class AccountController : Controller
                 ModelState.AddModelError("emailAddress", "Email already in use.");
                 return View(model);
             }
+
+            var salt = GenerateSalt();
             var newUser = new User
             {
                 UserName = model.UserName,
                 Email = model.emailAddress,
-                Salt = GenerateSalt(),
-                HashPw = HashPassword(model.Password, GenerateSalt()),
+                Salt = salt,
+                HashPw = HashPassword(model.Password, salt),
                 IsAdmin = false,
                 IsStaff = false
             };
@@ -165,6 +167,8 @@ public class AccountController : Controller
 
     private string GenerateSalt()
     {
+        //I stole this from https://stackoverflow.com/questions/45220359/encrypting-and-verifying-a-hashed-password-with-salt-using-pbkdf2-encryption
+
         byte[] salt = new byte[128 / 8];
         using (var rng = RandomNumberGenerator.Create())
         {
@@ -182,6 +186,15 @@ public class AccountController : Controller
             numBytesRequested: 256 / 8);
 
         return Convert.ToBase64String(bytes);
+    }
+    private bool ValidatePassword(string password, string salt, string hashedPassword)
+    {
+        Console.WriteLine("pass: " + password);
+        Console.WriteLine("salt: " + salt.ToString());
+        Console.WriteLine("providedHash:  " + hashedPassword.ToString());
+        string hashedPw = HashPassword(password, salt);
+        Console.WriteLine("generatedHash: " + hashedPw.ToString());
+        return hashedPw.Equals(hashedPassword);
     }
     private async Task Authenticate(User user)
     {
@@ -221,9 +234,5 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
     }
-    private bool ValidatePassword(string password, string salt, string hashedPassword)
-    {
-        //Todo: add pw validation
-        return password == hashedPassword;
-    }
+
 }
