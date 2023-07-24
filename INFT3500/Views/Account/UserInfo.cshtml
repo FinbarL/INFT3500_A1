@@ -13,7 +13,10 @@
 <p>Is Admin: @Model.IsAdmin</p>
 <p>Is Staff: @Model.IsStaff</p>
 <p>Claims:</p>
-@foreach (var claim in User.Claims)
-{
-    <p> @claim.ToString()</p>
-}
+<div class="updateUser">
+    <a asp-controller="Account"
+       asp-action="UpdateUser"
+       asp-route-id="@Model.UserName"
+       method="get"
+       class="btn btn-success">Update Details</a>
+</div> 
