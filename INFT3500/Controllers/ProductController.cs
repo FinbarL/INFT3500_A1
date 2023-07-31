@@ -51,15 +51,22 @@ public class ProductController : Controller
     [Authorize(Policy = "RequireAdminRole")]
     public IActionResult AddItem()
     {
-        var model = new AddProductViewModel();
-        model.Genre = 1;
+        Console.WriteLine("Called");
+        var model = new AddProductViewModel
+        {
+            Genre = 1
+        };
         return View(model);
     }
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public IActionResult AddItem(Product product)
     {
-        return View();
+        var model = new AddProductViewModel
+        {
+            Genre = 1
+        };
+        return View(model);
     }
     private static ProductViewModel ProductToViewModel(Product product)
     {

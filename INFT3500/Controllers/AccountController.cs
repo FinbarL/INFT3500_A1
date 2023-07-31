@@ -117,11 +117,12 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        //Need to make this a transaction
         if (ModelState.IsValid)
         {
             var passwordMatches = model.Password == model.ConfirmPassword;
             var userExists = await _context.Users.AnyAsync(u => u.UserName == model.UserName);
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == model.emailAddress);
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == model.EmailAddress);
             if (!passwordMatches)
             {
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
@@ -142,7 +143,7 @@ public class AccountController : Controller
             var newUser = new User
             {
                 UserName = model.UserName,
-                Email = model.emailAddress,
+                Email = model.EmailAddress,
                 Salt = salt,
                 HashPw = HashPassword(model.Password, salt),
                 IsAdmin = false,
@@ -150,10 +151,40 @@ public class AccountController : Controller
             };
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+            Console.WriteLine("New User: " + newUser.UserId + " Created");
+
+            var newUserDetails = new To
+            {
+                CustomerId = newUser.UserId,
+                UserName = newUser.UserName,
+                Email = model.BillingEmail,
+                PhoneNumber = model.PhoneNumber,
+                StreetAddress = model.Address,
+                PostCode = Convert.ToInt32(model.PostCode),
+                Suburb = model.Suburb,
+                State = model.State,
+                CardNumber = model.CardNumber,
+                CardOwner = model.CardOwner,
+                Expiry = model.CardExpiry,
+                Cvv = Convert.ToInt32(model.CardCVV),
+            };
+            Console.WriteLine(newUserDetails);
+            /*_context.Tos.Add(newUserDetails);
+            await _context.SaveChangesAsync();*/
             await Authenticate(newUser);
             return RedirectToAction("UserInfo", "Account");
         }
+        /*
         ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
+        */
+        var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .Select(x => new { x.Key, x.Value.Errors })
+            .ToArray();
+        foreach(var item in errors)
+        {
+            Console.WriteLine(item.ToString());
+        }
         return View(model);
     }
     

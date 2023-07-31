@@ -25,9 +25,9 @@
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="emailAddress">Email</label>
-                <input asp-for="emailAddress" class="form-control"/>
-                <span asp-validation-for="emailAddress" class="text-danger"></span>
+                <label asp-for="EmailAddress">Email</label>
+                <input asp-for="EmailAddress" class="form-control"/>
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password">Password</label>
@@ -39,9 +39,66 @@
                 <input asp-for="ConfirmPassword" class="form-control"/>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
-                        <p class="mb-0 mt-1"> Already have an account?  <a asp-controller="Account"
-                                                                           asp-action="Register"
-                                                                           class="link-info">Login here</a></p>
+            <h2>Billing Information</h2>
+            <div class="form-group">
+                <label asp-for="BillingEmail">Billing Email: </label>
+                <input asp-for="BillingEmail" class="form-control"/>
+                <span asp-validation-for="BillingEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Phone Number: </label>
+                <input asp-for="PhoneNumber" class="form-control"/>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address">Address: </label>
+                <input asp-for="Address" class="form-control"/>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostCode">Post Code: </label>
+                <input asp-for="PostCode" class="form-control"/>
+                <span asp-validation-for="PostCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Suburb">Suburb: </label>
+                <input asp-for="Suburb" class="form-control"/>
+                <span asp-validation-for="Suburb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State">State: </label>
+                <input asp-for="State" class="form-control"/>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <h2>Card details</h2>
+            <div class="form-group">
+                <label asp-for="CardNumber">Card Number: </label>
+                <input asp-for="CardNumber" class="form-control"/>
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardOwner">Card Owner: </label>
+                <input asp-for="CardOwner" class="form-control"/>
+                <span asp-validation-for="CardOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardCVV">Card CCV: </label>
+                <input asp-for="CardCVV" class="form-control"/>
+                <span asp-validation-for="CardCVV" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardExpiry">Card Expiry: </label>
+                <input asp-for="CardExpiry" class="form-control"/>
+                <span asp-validation-for="CardExpiry" class="text-danger"></span>
+            </div>
+            <p class="mb-0 mt-1">
+                Already have an account?
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="link-info">
+                    Login here
+                </a>
+            </p>
             <button type="submit" class="btn btn-primary mt-3">Register Account</button>
         </form>
     </div>
