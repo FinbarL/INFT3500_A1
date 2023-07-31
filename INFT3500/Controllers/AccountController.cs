@@ -57,7 +57,7 @@ public class AccountController : Controller
             IsAdmin = user.IsAdmin ?? false,
             IsStaff = user.IsStaff ?? false
         };
-        if (user != null)
+        /*if (user != null)
         {
             _context.Attach(user);
             _context.Entry(user).Property(u => u.Email).IsModified = true;
@@ -66,7 +66,7 @@ public class AccountController : Controller
             _context.Entry(user).Property(u => u.IsStaff).IsModified = true;
             await _context.SaveChangesAsync();
             return RedirectToAction("UserInfo", "Account");
-        }
+        }*/
 
         
         return View(updateUserViewModel);
