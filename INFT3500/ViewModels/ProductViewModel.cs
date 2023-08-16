@@ -6,7 +6,7 @@ public class ProductViewModel
     public string? Name { get; set; }
     public string? Author { get; set; }
     public string? Description { get; set; }
-    public DateOnly? Published { get; set; }
+    public DateTime? Published { get; set; }
     public GenreViewModel Genre { get; set; }
     public string SubGenre { get; set; }
     public int Quantity { get; set; }

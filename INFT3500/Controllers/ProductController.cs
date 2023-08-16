@@ -60,12 +60,35 @@ public class ProductController : Controller
     }
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
-    public IActionResult AddItem(Product product)
+    public IActionResult AddItem(AddProductViewModel model)
     {
-        var model = new AddProductViewModel
+        Console.WriteLine(model.Published);
+        Console.WriteLine(new DateTime());
+        if (ModelState.IsValid)
         {
-            Genre = 1
-        };
+            var newProduct = new Product
+            {
+                Name = model.Name,
+                Author = model.Author,
+                Description = model.Description,
+                Published = model.Published,
+                Genre = model.Genre,
+                SubGenre = model.SubGenre,
+                LastUpdatedBy = User.Identity.Name,
+                LastUpdated = DateTime.Now,
+            };
+            var productAdded = _dbContext.Products.Add(newProduct);
+            var newStocktake = new Stocktake
+            {
+                Product = productAdded.Entity,
+                Source = _dbContext.Sources.First(s => s.ExternalLink != null && s.Genre == model.Genre),
+                Quantity = model.StocktakeQuantity,
+                Price = model.StocktakePrice,
+            };
+            _dbContext.Stocktakes.Add(newStocktake);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Details", "Product", productAdded.Entity.Id);
+        }
         return View(model);
     }
     private static ProductViewModel ProductToViewModel(Product product)
@@ -102,5 +125,4 @@ public class ProductController : Controller
             .Select(p => ProductToViewModel(p)).First();
         return productViewModel;
     }
-
 }

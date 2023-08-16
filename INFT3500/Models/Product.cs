@@ -17,7 +17,7 @@ public partial class Product
 
     public string? SubGenre { get; set; }
 
-    public DateOnly? Published { get; set; }
+    public DateTime? Published { get; set; }
 
     public string? LastUpdatedBy { get; set; }
 

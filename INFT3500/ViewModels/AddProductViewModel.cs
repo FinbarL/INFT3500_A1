@@ -1,5 +1,6 @@
 using INFT3500.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace INFT3500.ViewModels;
 
@@ -17,7 +18,13 @@ public class AddProductViewModel
 
     public string? SubGenre { get; set; }
 
-    public DateOnly? Published { get; set; }
+    public DateTime? Published { get; set; }
+    
+    public int? StocktakeSourceId { get; set; }
+    
+    public int? StocktakeQuantity { get; set; }
+    
+    public double? StocktakePrice { get; set; }
 
     public List<SelectListItem> GenreList { get; } = new List<SelectListItem>
     {
@@ -25,4 +32,11 @@ public class AddProductViewModel
         new SelectListItem { Value = "2", Text = "Movies" },
         new SelectListItem { Value = "3", Text = "Games"  },
     };
+    public List<SelectListItem> SourceList { get; } = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "2", Text = "Audible" },
+        new SelectListItem { Value = "3", Text = "Steam" },
+        new SelectListItem { Value = "4", Text = "Prime Video"  },
+    };
+    
 }
