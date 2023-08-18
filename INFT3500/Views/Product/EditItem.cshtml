@@ -1,8 +1,86 @@
-@model ProductViewModel
+@model AddProductViewModel
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
 
-<h2>Edit Item</h2>
+@section Scripts {
+    <script>
+        function updateStocktakeSource(selectedGenre) {
+            var sourceSelect = document.getElementById("StocktakeSourceId");
+
+            switch (selectedGenre) {
+                case "1": // Books
+                    sourceSelect.value = "2"; // Audible
+                    break;
+                case "2": // Movies
+                    sourceSelect.value = "4"; // Prime Video
+                    break;
+                case "3": // Games
+                    sourceSelect.value = "3"; // Stream
+                    break;
+                default:
+                    sourceSelect.value = "";
+                    break;
+            }
+        }
+    </script>
+}
+
+<h2>Add Item</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Product" asp-action="EditItem" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label asp-for="Name">Product Name:</label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Author">Author:</label>
+                <input asp-for="Author" class="form-control"/>
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description">Description:</label>
+                <textarea asp-for="Description" id="Description"  rows="5" TextMode="MultiLine" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Genre">Genre: </label>
+                <select asp-for="Genre" asp-items="Model.GenreList" onchange="updateStocktakeSource(this.value)"></select>
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubGenre">Sub-Genre:</label>
+                <input asp-for="SubGenre" class="form-control"/>
+                <span asp-validation-for="SubGenre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Published">Date Published:</label>
+                <input asp-for="Published" class="form-control" type="date"/>
+                <span asp-validation-for="Published" class="text-danger"></span>
+            </div>
+            <h2>Stocktake Values</h2>
+            <div class="form-group mt-2">
+                <label asp-for="StocktakeSourceId">Source: </label>
+                <select asp-for="StocktakeSourceId" disabled asp-items="Model.SourceList"></select>
+                <span asp-validation-for="StocktakeSourceId" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="StocktakeQuantity">Quantity: </label>
+                <input asp-for="StocktakeQuantity" class="form-control"/>
+                <span asp-validation-for="StocktakeQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="StocktakePrice">Price: </label>
+                <input asp-for="StocktakePrice" class="form-control"/>
+                <span asp-validation-for="StocktakePrice" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Add Product</button>
+        </form>
+    </div>
+</div>

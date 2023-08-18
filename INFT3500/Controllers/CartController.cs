@@ -28,7 +28,7 @@ public class CartController : Controller
     [Authorize]
     public async Task<IActionResult> AddToCart(int id)
     {
-        var product = await ProductController.GetProductById(id);
+        var product = await ProductController.GetProductViewModelById(id);
         if (product == null)
         {
             Console.WriteLine("Product not found");

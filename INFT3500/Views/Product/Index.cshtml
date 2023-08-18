@@ -31,6 +31,7 @@
         <th>Published</th>
         <th>Genre</th>
         <th>Qty</th>
+        <th>Price</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -45,6 +46,7 @@
             <td>@product.Published.ToString()</td>
             <td>@product.Genre.Name</td>
             <td>@product.Quantity.ToString()</td>
+            <td>@product.Price</td>
             <td>
                 <div class="container">
                     <div class="d-flex flex-row">
@@ -52,29 +54,28 @@
                         {
                             <div class="p-2">
                                 <a asp-controller="Product"
-                                   asp-action="Details"
+                                   asp-action="EditItem"
                                    asp-route-id="@product.ProductId"
                                    class="btn btn-warning">
                                     Edit Item
                                 </a>
                             </div>
+
                             <div class="p-2">
-                                <a asp-controller="Product"
-                                   asp-action="Details"
-                                   asp-route-id="@product.ProductId"
-                                   class="btn btn-danger">
-                                    Remove Item
-                                </a>
+                                <form asp-controller="Product" asp-action="RemoveItem" method="post">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <button type="submit" class="btn btn-danger">Remove Item</button>
+                                </form>
                             </div>
                         }
-                            <div class="p-2">
-                                <a asp-controller="Product"
-                                   asp-action="Details"
-                                   asp-route-id="@product.ProductId"
-                                   class="btn btn-success">
-                                    View Details
-                                </a>
-                            </div>
+                        <div class="p-2">
+                            <a asp-controller="Product"
+                               asp-action="Details"
+                               asp-route-id="@product.ProductId"
+                               class="btn btn-success">
+                                View Details
+                            </a>
+                        </div>
                     </div>
                 </div>
             </td>
