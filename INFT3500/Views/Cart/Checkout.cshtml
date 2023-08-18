@@ -6,6 +6,18 @@
 }
 
 <h2>Checkout</h2>
+<table>
+    <thead>
+    <tr>
+        <th>PID</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Published</th>
+        <th>Price</th>
+        <th>Qty</th>
+    </tr>
+    </thead>
+    <tbody>
 @if (Model == null || Model.Count == 0)
 {
     <tr>
@@ -21,15 +33,16 @@ else
             <td>@cartItem.Product.Name</td>
             <td>@cartItem.Product.Author</td>
             <td>@cartItem.Product.Published.ToString()</td>
+            <td>@cartItem.Product.Price</td>
             <td>@cartItem.Quantity</td>
-            <td class="addToCart">
-                <a asp-controller="Cart"
-                   asp-action="RemoveFromCart"
-                   asp-route-id="@cartItem.Product.ProductId"
-                   class="btn btn-danger">
-                    Remove
-                </a>
-            </td>
         </tr>
     }
 }
+
+            <a asp-controller="Cart"
+               asp-action="Checkout"
+               class="btn btn-success">
+                Go Back
+            </a>
+    </tbody>
+</table>
