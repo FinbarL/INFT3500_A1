@@ -1,6 +1,7 @@
 using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -32,9 +33,11 @@ public class ProductController : Controller
     }
     public async Task<IActionResult> Details(int id)
     {
-        var productViewModel = await GetProductById(id);
+        var productViewModel = await GetProductViewModelById(id);
         return View(productViewModel);
     }
+
+
 
     private async Task<List<ProductViewModel>> GetProductList(string? searchString)
     {
@@ -87,9 +90,79 @@ public class ProductController : Controller
             };
             _dbContext.Stocktakes.Add(newStocktake);
             _dbContext.SaveChanges();
-            return RedirectToAction("Details", "Product", productAdded.Entity.Id);
+            return RedirectToAction("Details", "Product", new {id = newProduct.Id});
         }
         return View(model);
+    }
+    public IActionResult EditItem(int id)
+    {
+        var productViewModel = GetProductById(id);
+        var addProductViewModel = new AddProductViewModel
+        {
+            Name = productViewModel.Name,
+            Author = productViewModel.Author,
+            Description = productViewModel.Description,
+            Published = productViewModel.Published,
+            Genre = productViewModel.Genre,
+            SubGenre = productViewModel.SubGenre,
+            Id = productViewModel.Id,
+            StocktakeSourceId = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).SourceId,
+            StocktakeQuantity = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Quantity,
+            StocktakePrice = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Price,
+            
+        };
+        return View(addProductViewModel);
+    }
+    [Authorize(Policy = "RequireAdminRole")]
+    [HttpPost]
+    public async Task<IActionResult> EditItem(AddProductViewModel model)
+    {
+        Console.WriteLine(model.Published);
+        Console.WriteLine(new DateTime());
+        if (ModelState.IsValid)
+        {
+            Console.WriteLine("MODELID=" + model.Id);
+            var existingItem =  _dbContext.Products.FirstOrDefault(p => p.Id == model.Id);
+            var existingStocktake = _dbContext.Stocktakes.FirstOrDefault(s => s.ProductId == model.Id && s.Source.ExternalLink != null);
+            Console.WriteLine("NEWSOURCE=" + model.StocktakeSourceId);
+            Console.WriteLine("SOURCEID =" + existingStocktake.SourceId);
+            if (existingItem != null)
+            {
+                existingItem.Name = model.Name;
+                existingItem.Author = model.Author;
+                existingItem.Description = model.Description;
+                existingItem.Published = model.Published;
+                //existingItem.Genre = model.Genre;
+                existingItem.SubGenre = model.SubGenre;
+                existingItem.LastUpdatedBy = User.Identity.Name;
+                existingItem.LastUpdated = DateTime.Now;
+                if (existingStocktake != null)
+                {
+                    existingStocktake.Quantity = model.StocktakeQuantity;
+                    existingStocktake.Price = model.StocktakePrice;
+                    //existingStocktake.SourceId = model.StocktakeSourceId;
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Details", "Product", new {id = existingItem.Id});
+                }
+            }
+            Console.WriteLine("ERROR!! @ EditItem");
+        }
+        return View(model);
+    }
+    [Authorize(Policy = "RequireAdminRole")]
+    [HttpPost]
+    public async Task<IActionResult> RemoveItem(int productId)
+    {
+        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        if (product != null)
+        {
+            _dbContext.Products.Remove(product);
+            var stocktakes = _dbContext.Stocktakes.Where(s => s.ProductId == productId);
+            _dbContext.Stocktakes.RemoveRange(stocktakes);
+            await _dbContext.SaveChangesAsync();
+        }
+        return RedirectToAction("Index", "Product");
+        
     }
     private static ProductViewModel ProductToViewModel(Product product)
     {
@@ -116,7 +189,7 @@ public class ProductController : Controller
         };
         return productViewModel;
     }
-    public async Task<ProductViewModel> GetProductById(int id)
+    public async Task<ProductViewModel> GetProductViewModelById(int id)
     {
         var productViewModel = _dbContext.Products
             .Include(p => p.GenreNavigation)
@@ -124,5 +197,15 @@ public class ProductController : Controller
             .Where(p => p.Id == id)
             .Select(p => ProductToViewModel(p)).First();
         return productViewModel;
+    }
+
+    private Product GetProductById(int id)
+    {
+        var product =  _dbContext.Products
+            .Include(p => p.GenreNavigation)
+            .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
+            .Where(p => p.Id == id)
+            .Select(p =>(p)).First();
+        return product;
     }
 }

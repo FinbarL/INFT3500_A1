@@ -108,12 +108,16 @@ public partial class StoreDbContext : DbContext
         modelBuilder.Entity<Stocktake>(entity =>
         {
             entity.HasKey(e => e.ItemId);
+            entity.Property(e => e.SourceId).HasColumnName("SourceId");
+            entity.Property(e => e.ProductId).HasColumnName("ProductId");
+            entity.Property(e => e.ItemId).HasColumnName("ItemId");
 
             entity.ToTable("Stocktake");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Stocktakes)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_Stocktake_Product");
+                .HasConstraintName("FK_Stocktake_Product")
+                .OnDelete(DeleteBehavior.Cascade);;
 
             entity.HasOne(d => d.Source).WithMany(p => p.Stocktakes)
                 .HasForeignKey(d => d.SourceId)
