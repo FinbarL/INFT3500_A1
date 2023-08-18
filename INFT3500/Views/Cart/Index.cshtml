@@ -9,8 +9,9 @@
         <th>Name</th>
         <th>Author</th>
         <th>Published</th>
-        <th>Quantity</th>
-        <th>Remove?</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -25,17 +26,30 @@
         foreach (var cartItem in Model)
         {
             <tr>
-                <td>@cartItem.Product.Id</td>
+                <td>@cartItem.Product.ProductId</td>
                 <td>@cartItem.Product.Name</td>
                 <td>@cartItem.Product.Author</td>
                 <td>@cartItem.Product.Published.ToString()</td>
+                <td>@cartItem.Product.Price</td>
                 <td>@cartItem.Quantity</td>
                 <td class="addToCart">
                     <a asp-controller="Cart"
+                       asp-action="AddToCart"
+                       asp-route-id="@cartItem.Product.ProductId"
+                       class="btn btn-success">
+                        +
+                    </a>
+                    <a asp-controller="Cart"
+                       asp-action="DecrementQty"
+                       asp-route-id="@cartItem.Product.ProductId"
+                       class="btn btn-warning">
+                        -
+                    </a>
+                    <a asp-controller="Cart"
                        asp-action="RemoveFromCart"
-                       asp-route-id="@cartItem.Product.Id"
+                       asp-route-id="@cartItem.Product.ProductId"
                        class="btn btn-danger">
-                        Remove
+                        Remove From Cart
                     </a>
                 </td>
             </tr>

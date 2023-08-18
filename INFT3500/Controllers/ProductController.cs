@@ -116,7 +116,7 @@ public class ProductController : Controller
         };
         return productViewModel;
     }
-    private async Task<ProductViewModel> GetProductById(int id)
+    public async Task<ProductViewModel> GetProductById(int id)
     {
         var productViewModel = _dbContext.Products
             .Include(p => p.GenreNavigation)
