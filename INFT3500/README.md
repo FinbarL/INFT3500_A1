@@ -17,3 +17,18 @@ LIST OF AVAILABLE USERS:
 3. Staff
     - Username: staff
     - Password: staff
+
+
+Questions: 
+
+1. Are the items listed in the business scenario the only ones we need to cover? 
+2. What does the 'update order details' look like? (UML Diagram)
+3. I currently don't allow the user to update the genre, is this okay? 
+4. Whats the actual MVP? Is it just the business scenarios?
+
+
+TODO:
+- Admins can create new users, include setting isAdmin and isStaff
+- Email verification and account recovery (forgot password)
+- User Order History
+- Show all items in the admin product view 
