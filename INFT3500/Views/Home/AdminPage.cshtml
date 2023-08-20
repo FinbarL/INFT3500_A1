@@ -30,8 +30,8 @@
         </span>
     </div>
 </div>
-<table>
-    <thead>
+<table class="table table-bordered">
+    <thead class="table-light">
     <tr>
         <th>UserID</th>
         <th>UserName</th>
@@ -75,12 +75,10 @@
                                 </a>
                             </div>
                             <div class="p-2">
-                                <a asp-controller="Account"
-                                   asp-action="UpdateUser"
-                                   asp-route-id="@user.UserName"
-                                   class="btn btn-danger">
-                                    Remove User
-                                </a>
+                                <form asp-controller="Account" asp-action="RemoveUser" method="post">
+                                    <input type="hidden" name="userName" value="@user.UserName" />
+                                    <button type="submit" class="btn btn-danger">Remove User</button>
+                                </form>
                             </div>
                         }
                     </div>

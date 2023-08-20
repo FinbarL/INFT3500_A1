@@ -92,6 +92,23 @@ public class AccountController : Controller
         Console.WriteLine("invalid!!!");
         return View(model);
     }
+    [Authorize(Policy = "RequireAdminRole")]
+    [HttpPost]
+    public async Task<IActionResult> RemoveUser(string userName)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+        if (user != null)
+        {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            Console.WriteLine("ERROR: User: " + userName + " not found");
+        }
+        return RedirectToAction("AdminPage", "Home");
+
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -168,8 +185,12 @@ public class AccountController : Controller
                 Cvv = Convert.ToInt32(model.CardCVV),
             };
             Console.WriteLine(newUserDetails);
-            /*_context.Tos.Add(newUserDetails);
-            await _context.SaveChangesAsync();*/
+            _context.Tos.Add(newUserDetails);
+            await _context.SaveChangesAsync();
+            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
+            }
             await Authenticate(newUser);
             return RedirectToAction("UserInfo", "Account");
         }
