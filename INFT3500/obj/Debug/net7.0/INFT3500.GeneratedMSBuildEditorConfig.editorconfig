@@ -9,97 +9,97 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = INFT3500
 build_property.RootNamespace = INFT3500
-build_property.ProjectDir = C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\
+build_property.ProjectDir = C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500
+build_property.MSBuildProjectDirectory = C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/AccessDenied.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/Login.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/Register.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/UpdateUser.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Account/UpdateUser.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVcGRhdGVVc2VyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Account/UserInfo.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Account/UserInfo.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVc2VySW5mby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Admin/Index.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Cart/Checkout.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Cart/Checkout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxDaGVja291dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Cart/Index.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Cart/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Home/AdminPage.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Home/AdminPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblBhZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Home/Index.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Home/Privacy.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Home/UserPage.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Home/UserPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxVc2VyUGFnZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Product/AddItem.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Product/AddItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxBZGRJdGVtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Product/Details.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Product/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Product/EditItem.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Product/EditItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxFZGl0SXRlbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Product/Index.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Product/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Shared/Components/CartTotal/_CartTotal.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Shared/Components/CartTotal/_CartTotal.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2FydFRvdGFsXF9DYXJ0VG90YWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Shared/Error.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/_ViewImports.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/_ViewStart.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FinbarLaffan/RiderProjects/INFT3500/INFT3500/Views/Shared/_Layout.cshtml]
+[C:/Users/Finbar/RiderProjects/INFT3500_A1/INFT3500/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-te5xahwdpc

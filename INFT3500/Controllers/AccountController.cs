@@ -18,12 +18,12 @@ public class AccountController : Controller
     {
         _context = context;
     }
-    
+
     public IActionResult Login()
     {
         return View();
     }
-    
+
     public IActionResult Register()
     {
         return View();
@@ -68,10 +68,10 @@ public class AccountController : Controller
             return RedirectToAction("UserInfo", "Account");
         }*/
 
-        
+
         return View(updateUserViewModel);
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
@@ -81,13 +81,12 @@ public class AccountController : Controller
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
             if(user != null)
             {
-                _context.Attach(user);
-                _context.Entry(user).Property(u => u.Email).IsModified = true;
-                _context.Entry(user).Property(u => u.Name).IsModified = true;
-                _context.Entry(user).Property(u => u.IsAdmin).IsModified = true;
-                _context.Entry(user).Property(u => u.IsStaff).IsModified = true;
+                user.Email = model.Email;
+                user.Name = model.Name;
+                user.IsAdmin = model.IsAdmin;
+                user.IsStaff = model.IsStaff;
                 await _context.SaveChangesAsync();
-                return RedirectToAction("UserInfo", "Account");
+                return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
             }
         }
         Console.WriteLine("invalid!!!");
@@ -187,12 +186,18 @@ public class AccountController : Controller
         }
         return View(model);
     }
-    
+
     [Authorize]
     public IActionResult UserInfo()
     {
         string username = User.Identity.Name;
         var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+        return View(user);
+    }
+    [Route("Account/UserInfo/{userName}")]
+    public IActionResult UserInfo(string userName)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
         return View(user);
     }
 
@@ -258,7 +263,7 @@ public class AccountController : Controller
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Logout()
     {
