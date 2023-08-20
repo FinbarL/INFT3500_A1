@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿/*
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,16 +11,8 @@ namespace INFT3500.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_TO_Patrons",
-                table: "TO");
-
             migrationBuilder.DropTable(
                 name: "Patrons");
-
-            migrationBuilder.DropIndex(
-                name: "IX_TO_PatronId",
-                table: "TO");
 
             migrationBuilder.DropColumn(
                 name: "PatronId",
@@ -91,18 +84,7 @@ namespace INFT3500.Migrations
                 {
                     table.PrimaryKey("PK_Patrons", x => x.UserID);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TO_PatronId",
-                table: "TO",
-                column: "PatronId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_TO_Patrons",
-                table: "TO",
-                column: "PatronId",
-                principalTable: "Patrons",
-                principalColumn: "UserID");
         }
     }
 }
+*/

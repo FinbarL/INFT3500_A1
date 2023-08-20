@@ -18,7 +18,7 @@ namespace INFT3500.Migrations
                 oldClrType: typeof(int),
                 oldType: "int",
                 oldNullable: true);
-            
+
             migrationBuilder.AddColumn<string>("isStaff", "User", type: "bit", nullable: true);
             migrationBuilder.AddColumn<string>("patronID", "User", type: "int", nullable: true);
             migrationBuilder.Sql(
@@ -28,7 +28,7 @@ namespace INFT3500.Migrations
                   ELSE 0
                   END
                   ");
-            
+
             migrationBuilder.Sql(
                 @"INSERT INTO [User] (UserName, Email, Name, isStaff, isAdmin, Salt, HashPW, patronId)
                   SELECT
@@ -43,6 +43,11 @@ namespace INFT3500.Migrations
                   FROM Patrons");
             migrationBuilder.DropForeignKey("FK_TO_Patrons", "TO");
             migrationBuilder.RenameColumn("PatronId", "TO", "UserID");
+            migrationBuilder.AlterColumn<string>(
+                name: "UserID",
+                table: "TO",
+                type: "nvarchar(max)",
+                nullable: true);
             migrationBuilder.Sql(@"UPDATE [TO] SET UserID = (SELECT UserName FROM [User] WHERE patronId = [TO].UserID)");
         }
 
