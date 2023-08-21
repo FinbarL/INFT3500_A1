@@ -25,6 +25,7 @@ Questions:
 2. What does the 'update order details' look like? (UML Diagram)
 3. I currently don't allow the user to update the genre, is this okay? 
 4. Whats the actual MVP? Is it just the business scenarios?
+5. Do we need to actually have email integration? 
 
 
 TODO:

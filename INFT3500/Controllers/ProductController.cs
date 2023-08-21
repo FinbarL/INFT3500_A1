@@ -41,14 +41,29 @@ public class ProductController : Controller
 
     private async Task<List<ProductViewModel>> GetProductList(string? searchString)
     {
-        var products = _dbContext.Products
-            .Include(p => p.GenreNavigation)
-            .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
-            .Where(p => p.Author != null && p.Name != null &&
-                        (searchString == null || searchString == "" ||
-                         p.Name.Contains(searchString) || p.Author.Contains(searchString)) && p.Stocktakes.Count(s => s.Source.ExternalLink != null) > 0)
-            .Select(p => ProductToViewModel(p));
-        return await products.ToListAsync();
+        if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+        {
+            var products = _dbContext.Products
+                .Include(p => p.GenreNavigation)
+                .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
+                .Where(p => p.Author != null && p.Name != null &&
+                            (searchString == null || searchString == "" ||
+                             p.Name.Contains(searchString) || p.Author.Contains(searchString)))
+                .Select(p => ProductToViewModel(p));
+            return await products.ToListAsync();
+        }
+        else
+        {
+            Console.WriteLine(User.Identity.Name);
+            var products = _dbContext.Products
+                .Include(p => p.GenreNavigation)
+                .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
+                .Where(p => p.Author != null && p.Name != null &&
+                            (searchString == null || searchString == "" ||
+                             p.Name.Contains(searchString) || p.Author.Contains(searchString)) && p.Stocktakes.Count(s => s.Source.ExternalLink != null) > 0)
+                .Select(p => ProductToViewModel(p));
+            return await products.ToListAsync();
+        }
     }
 
     [Authorize(Policy = "RequireAdminRole")]
