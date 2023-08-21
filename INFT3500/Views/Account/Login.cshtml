@@ -19,9 +19,22 @@
                 <input asp-for="Password" class="form-control"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <p class="mb-0 mt-1"> Don't have an account?  <a asp-controller="Account"
-                                                               asp-action="Register"
-                                                               class="link-info">Register here</a></p>
+            <p class="mb-0 mt-1">
+                Don't have an account?
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="link-info">
+                    Register here
+                </a>
+            </p>
+            <p class="mb-0 mt-1">
+                Forgot your password? 
+                <a asp-controller="Account"
+                   asp-action="RecoverAccount"
+                   class="link-info">
+                    Reset Password
+                </a>
+            </p>
             <button type="submit" class="btn btn-primary mt-3">Login</button>
         </form>
     </div>

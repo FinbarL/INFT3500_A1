@@ -1,6 +1,8 @@
 using INFT3500.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(options =>
@@ -35,6 +37,18 @@ builder.Services.AddDbContext<StoreDbContext>(options =>
         builder.Configuration["ConnectionStrings:StoreDbContextConnection"]);
 });
 builder.Services.AddSession();
+var apiKey = "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";
+var client = new SendGridClient(apiKey);
+var msg = new SendGridMessage()
+{
+    From = new EmailAddress("c3331609@uon.edu.au", "Finbar Laffan"),
+    Subject = "Sending with Twillio Sendgrid",
+    PlainTextContent = "Hello World",
+};
+msg.AddTo(new EmailAddress("shadyswords@gmail.com", "Joe Bloggs"));
+var response = await client.SendEmailAsync(msg);
+Console.WriteLine(response.IsSuccessStatusCode ? "Email queued successfully!" : "Something went wrong!");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

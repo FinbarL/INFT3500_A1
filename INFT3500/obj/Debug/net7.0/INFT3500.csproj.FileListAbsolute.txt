@@ -86,3 +86,6 @@ C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\runtimes\
 C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\obj\Debug\net7.0\INFT3500.csproj.CopyComplete
 C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\SendGrid.dll
+C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\StarkbankEcdsa.dll
+C:\Users\FinbarLaffan\RiderProjects\INFT3500\INFT3500\bin\Debug\net7.0\SendGrid.Extensions.DependencyInjection.dll

@@ -1,0 +1,19 @@
+@model INFT3500.ViewModels.RecoverPasswordViewModel
+@{
+    ViewBag.Title = "Forgot Password";
+    Layout = "_Layout";
+}
+<h2>Forgot Password</h2>
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Account" asp-action="RecoverAccount" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Email Link</button>
+        </form>
+    </div>
+</div>

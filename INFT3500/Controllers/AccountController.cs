@@ -1,6 +1,7 @@
 using System.Net.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using INFT3500;
 using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -13,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 public class AccountController : Controller
 {
     private readonly StoreDbContext _context;
+    private SendGridEmailSender _sendGridEmailSender;
 
     public AccountController(StoreDbContext context)
     {
+        _sendGridEmailSender = new SendGridEmailSender();
         _context = context;
     }
     
@@ -28,6 +31,27 @@ public class AccountController : Controller
     {
         return View();
     }
+    [HttpGet]
+    public IActionResult RecoverAccount()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> RecoverAccount(RecoverPasswordViewModel recoverPasswordViewModel)
+    {
+        var emailAddress = recoverPasswordViewModel.Email;
+        var user = _context.Users.FirstOrDefault(u => u.UserName == emailAddress);
+        if (user != null)
+        {
+        }
+        await _sendGridEmailSender.SendEmailAsync(emailAddress, "TEST EMAIL", "TEST BODY"); 
+
+        Console.WriteLine(recoverPasswordViewModel.Email);
+        
+        return View(recoverPasswordViewModel);
+    }
+    
     [Authorize]
     [HttpGet]
     public IActionResult UpdateUser()
