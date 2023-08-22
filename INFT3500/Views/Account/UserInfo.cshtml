@@ -1,4 +1,4 @@
-@model User
+@model UserViewModel
 
 @{
     ViewBag.Title = "title";
@@ -8,11 +8,28 @@
 <h2>User Information</h2>
 
 <p>Username: @Model.UserName</p>
-<p>Email: @Model.Email</p>
+<p>Email: @Model.EmailAddress</p>
 <p>Name: @Model.Name</p>
 <p>Is Admin: @Model.IsAdmin</p>
 <p>Is Staff: @Model.IsStaff</p>
-<p>Claims:</p>
+
+<h2>Billing Information</h2>
+<p>Billing Email: @Model.BillingEmail</p>
+<p>Billing Name: @Model.Name</p>
+<p>Phone: @Model.PhoneNumber</p>
+<p>Billing Address: @Model.Address</p>
+<p>Billing Suburb: @Model.Suburb</p>
+<p>Billing State: @Model.State</p>
+<p>Billing Postcode: @Model.PostCode</p>
+<p>Card Number: @Model.CardNumber</p>
+<p>Card Owner: @Model.CardOwner</p>
+<p>Card Expiry: @Model.CardExpiry</p>
+<p>Card CCV: @Model.CardCVV</p>
+
+
+
+
+
 <div class="updateUser">
     <a asp-controller="Account"
        asp-action="UpdateUser"

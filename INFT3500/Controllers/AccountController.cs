@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 public class AccountController : Controller
 {
     private readonly StoreDbContext _context;
+
     public AccountController(StoreDbContext context)
     {
         _context = context;
@@ -23,6 +24,7 @@ public class AccountController : Controller
     {
         return View();
     }
+
     [HttpGet]
     public IActionResult RecoverAccount()
     {
@@ -53,20 +55,42 @@ public class AccountController : Controller
             };
             return View(viewModelWithTempPassword);
         }
+
         ModelState.AddModelError("Email", "User not found");
         return View(recoverPasswordViewModel);
     }
-    
+
     public IActionResult Register()
     {
         return View();
     }
+
     [Authorize]
     [HttpGet]
     public IActionResult UpdateUser()
     {
         string username = User.Identity.Name;
-        var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+        var updateUserViewModel = GetUpdateUserViewModel(username);
+        return View(updateUserViewModel);
+    }
+
+    [HttpGet]
+    [Route("Account/UpdateUser/{userName}")]
+    public async Task<IActionResult> UpdateUser(string userName)
+    {
+        var updateUserViewModel = GetUpdateUserViewModel(userName);
+        return View(updateUserViewModel);
+    }
+
+    public UpdateUserViewModel GetUpdateUserViewModel(string userName)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
+        if (user == null && userTo == null)
+        {
+            return null;
+        }
+
         var updateUserViewModel = new UpdateUserViewModel
         {
             UserName = user.UserName,
@@ -74,37 +98,62 @@ public class AccountController : Controller
             Name = user.Name,
             IsAdmin = user.IsAdmin ?? false,
             IsStaff = user.IsStaff ?? false,
+            BillingEmail = "",
+            PhoneNumber = "",
+            Address = "",
+            PostCode = "",
+            Suburb = "",
+            State = "",
+            CardNumber = "",
+            CardOwner = "",
+            CardExpiry = "",
+            CardCVV = ""
         };
-        return View(updateUserViewModel);
+        if (userTo != null)
+        {
+            updateUserViewModel.BillingEmail = userTo.Email ?? "";
+            updateUserViewModel.PhoneNumber = userTo.PhoneNumber ?? "";
+            updateUserViewModel.Address = userTo.StreetAddress ?? "";
+            updateUserViewModel.PostCode = userTo.PostCode.ToString() ?? "";
+            updateUserViewModel.Suburb = userTo.Suburb ?? "";
+            updateUserViewModel.State = userTo.State ?? "";
+            updateUserViewModel.CardNumber = userTo.CardNumber ?? "";
+            updateUserViewModel.CardOwner = userTo.CardOwner ?? "";
+            updateUserViewModel.CardExpiry = userTo.Expiry ?? "";
+            updateUserViewModel.CardCVV = userTo.Cvv.ToString() ?? "";
+        }
+        return updateUserViewModel;
     }
-    [HttpGet]
-    [Route("Account/UpdateUser/{userName}")]
-    public async Task<IActionResult> UpdateUser(string userName)
+
+    public UserViewModel GetUserViewModel(string userName)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        var updateUserViewModel = new UpdateUserViewModel
+        var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
+        if (user == null && userTo == null)
+        {
+            return null;
+        }
+
+        var userViewModel = new UserViewModel
         {
             UserName = user.UserName,
-            Email = user.Email,
+            EmailAddress = user.Email,
             Name = user.Name,
             IsAdmin = user.IsAdmin ?? false,
-            IsStaff = user.IsStaff ?? false
+            IsStaff = user.IsStaff ?? false,
+            BillingEmail = userTo.Email ?? "",
+            PhoneNumber = userTo.PhoneNumber ?? "",
+            Address = userTo.StreetAddress ?? "",
+            PostCode = userTo.PostCode.ToString() ?? "",
+            Suburb = userTo.Suburb ?? "",
+            State = userTo.State ?? "",
+            CardNumber = userTo.CardNumber ?? "",
+            CardOwner = userTo.CardOwner ?? "",
+            CardExpiry = userTo.Expiry ?? "",
+            CardCVV = userTo.Cvv.ToString() ?? ""
         };
-        /*if (user != null)
-        {
-            _context.Attach(user);
-            _context.Entry(user).Property(u => u.Email).IsModified = true;
-            _context.Entry(user).Property(u => u.Name).IsModified = true;
-            _context.Entry(user).Property(u => u.IsAdmin).IsModified = true;
-            _context.Entry(user).Property(u => u.IsStaff).IsModified = true;
-            await _context.SaveChangesAsync();
-            return RedirectToAction("UserInfo", "Account");
-        }*/
-
-
-        return View(updateUserViewModel);
+        return userViewModel;
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
@@ -112,19 +161,57 @@ public class AccountController : Controller
         if (ModelState.IsValid)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
-            if(user != null)
+            var userTo = await _context.Tos.FirstOrDefaultAsync(u => u.UserName == model.UserName);
+            if (user != null)
             {
                 user.Email = model.Email;
                 user.Name = model.Name;
                 user.IsAdmin = model.IsAdmin;
                 user.IsStaff = model.IsStaff;
                 await _context.SaveChangesAsync();
-                return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
             }
+
+            if (userTo == null)
+            {
+                var newUserDetails = new To
+                {
+                    UserName = user.UserName,
+                    Email = model.BillingEmail,
+                    PhoneNumber = model.PhoneNumber,
+                    StreetAddress = model.Address,
+                    PostCode = Convert.ToInt32(model.PostCode),
+                    Suburb = model.Suburb,
+                    State = model.State,
+                    CardNumber = model.CardNumber,
+                    CardOwner = model.CardOwner,
+                    Expiry = model.CardExpiry,
+                    Cvv = Convert.ToInt32(model.CardCVV),
+                };
+                _context.Tos.Add(newUserDetails);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                userTo.Email = model.BillingEmail;
+                userTo.PhoneNumber = model.PhoneNumber;
+                userTo.StreetAddress = model.Address;
+                userTo.PostCode = Convert.ToInt32(model.PostCode);
+                userTo.Suburb = model.Suburb;
+                userTo.State = model.State;
+                userTo.CardNumber = model.CardNumber;
+                userTo.CardOwner = model.CardOwner;
+                userTo.Expiry = model.CardExpiry;
+                userTo.Cvv = Convert.ToInt32(model.CardCVV);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("UserInfo", "Account", new { userName = model.UserName });
         }
+
         Console.WriteLine("invalid!!!");
         return View(model);
     }
+
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public async Task<IActionResult> RemoveUser(string userName)
@@ -139,10 +226,10 @@ public class AccountController : Controller
         {
             Console.WriteLine("ERROR: User: " + userName + " not found");
         }
-        return RedirectToAction("AdminPage", "Home");
 
+        return RedirectToAction("AdminPage", "Home");
     }
-    
+
     //UPDATE PASSWORD FOR USER 
     [Authorize]
     [HttpGet]
@@ -155,6 +242,7 @@ public class AccountController : Controller
         };
         return View(updatePasswordViewModel);
     }
+
     [HttpGet]
     [Route("Account/UpdatePassword/{userName}")]
     public async Task<IActionResult> UpdatePassword(string userName)
@@ -176,11 +264,11 @@ public class AccountController : Controller
             if (model.Password == model.ConfirmPassword)
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
-                if(user != null)
+                if (user != null)
                 {
                     var isChanged = await ChangePassword(model.UserName, model.ConfirmPassword);
                     Console.WriteLine("Password Changed: " + isChanged);
-                    return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
+                    return RedirectToAction("UserInfo", "Account", new { userName = model.UserName });
                 }
             }
             else
@@ -188,11 +276,12 @@ public class AccountController : Controller
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
             }
         }
+
         Console.WriteLine("invalid!!!");
         return View(model);
     }
 
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -206,12 +295,15 @@ public class AccountController : Controller
                 await Authenticate(user);
                 return RedirectToAction("UserInfo", "Account");
             }
+
             ModelState.AddModelError("UserName", "Invalid username or password.");
-                return View(model);
+            return View(model);
         }
+
         ModelState.AddModelError("", "ModelState Invalid.");
         return View(model);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
@@ -227,11 +319,13 @@ public class AccountController : Controller
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
                 return View(model);
             }
+
             if (userExists)
             {
                 ModelState.AddModelError("UserName", "Username already exists.");
                 return View(model);
             }
+
             if (emailExists)
             {
                 ModelState.AddModelError("emailAddress", "Email already in use.");
@@ -272,11 +366,13 @@ public class AccountController : Controller
             await _context.SaveChangesAsync();
             if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
             {
-                return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
+                return RedirectToAction("UserInfo", "Account", new { userName = model.UserName });
             }
+
             await Authenticate(newUser);
             return RedirectToAction("UserInfo", "Account");
         }
+
         /*
         ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
         */
@@ -284,10 +380,11 @@ public class AccountController : Controller
             .Where(x => x.Value.Errors.Count > 0)
             .Select(x => new { x.Key, x.Value.Errors })
             .ToArray();
-        foreach(var item in errors)
+        foreach (var item in errors)
         {
             Console.WriteLine(item.ToString());
         }
+
         return View(model);
     }
 
@@ -295,20 +392,21 @@ public class AccountController : Controller
     public IActionResult UserInfo()
     {
         string username = User.Identity.Name;
-        var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+        var user = GetUserViewModel(username);
         return View(user);
     }
+
     [Route("Account/UserInfo/{userName}")]
     public IActionResult UserInfo(string userName)
     {
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        var user = GetUserViewModel(userName);
         return View(user);
     }
 
     private string GenerateRandomPassword()
     {
         const int PW_LENGTH = 16;
-        StringBuilder stringBuilder = new StringBuilder();  
+        StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
 
         for (var i = 0; i < PW_LENGTH; i++)
@@ -316,11 +414,12 @@ public class AccountController : Controller
             var flt = random.NextDouble();
             var shift = Convert.ToInt32(Math.Floor(81 * flt));
             var letter = Convert.ToChar(shift + 41);
-            stringBuilder.Append(letter);  
+            stringBuilder.Append(letter);
         }
 
         return stringBuilder.ToString();
     }
+
     private string GenerateSalt()
     {
         //I stole this from https://stackoverflow.com/questions/45220359/encrypting-and-verifying-a-hashed-password-with-salt-using-pbkdf2-encryption
@@ -330,8 +429,10 @@ public class AccountController : Controller
         {
             rng.GetBytes(salt);
         }
+
         return Convert.ToBase64String(salt);
     }
+
     private string HashPassword(string password, string salt)
     {
         var bytes = KeyDerivation.Pbkdf2(
@@ -343,6 +444,7 @@ public class AccountController : Controller
 
         return Convert.ToBase64String(bytes);
     }
+
     private bool ValidatePassword(string password, string salt, string hashedPassword)
     {
         Console.WriteLine("pass: " + password);
@@ -352,15 +454,17 @@ public class AccountController : Controller
         Console.WriteLine("generatedHash: " + hashedPw.ToString());
         return hashedPw.Equals(hashedPassword);
     }
+
     private async Task<bool> ChangePassword(string userName, string password)
     {
         Console.WriteLine("Changing Password for: " + userName);
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName || u.Email == userName);
-        if(user == null)
+        if (user == null)
         {
             Console.WriteLine("User not found");
             return false;
         }
+
         var salt = GenerateSalt();
         var hashedPassword = HashPassword(password, salt);
         Console.WriteLine("Updating Password..");
@@ -372,6 +476,7 @@ public class AccountController : Controller
         return true;
         //Update user account to new password
     }
+
     private async Task Authenticate(User user)
     {
         var claims = new List<Claim>
@@ -408,5 +513,4 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
     }
-
 }

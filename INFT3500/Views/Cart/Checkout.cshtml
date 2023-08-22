@@ -1,4 +1,4 @@
-@model List<CartViewModel>
+@model CartPageViewModel
 
 @{
     ViewBag.Title = "Checkout";
@@ -18,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    @if (Model == null || Model.Count == 0)
+    @if (Model == null || Model.Products.Count == 0)
     {
         <tr>
             <td colspan="5">No items in cart</td>
@@ -26,7 +26,7 @@
     }
     else
     {
-        foreach (var cartItem in Model)
+        foreach (var cartItem in Model.Products)
         {
             <tr>
                 <td>@cartItem.Product.ProductId</td>
@@ -40,21 +40,84 @@
         //total price for cart 
         <tr>
             <td colspan="4" class="text-end fw-bold">Total Price</td>
-            <td colspan="2" class="text-start">$@Math.Round(Model.Sum(x => x.Product.Price * x.Quantity), 2)</td>
+            <td colspan="2" class="text-start">$@Math.Round(Model.Products.Sum(x => x.Product.Price * x.Quantity), 2)</td>
         </tr>
     }
     </tbody>
 </table>
-<div class="d-flex justify-content-between w-100 " >
-  <a asp-controller="Cart"
-     asp-action="Index"
-     class="btn btn-warning">
-      Go Back
-  </a>
-  <a asp-controller="Cart"
-     asp-action="FinalizeCheckout"
-     method="post"
-     class="btn btn-success">
-      Finalize Order
-  </a>  
-</div>
+<h2>Billing Information</h2>
+<form asp-controller="Cart" asp-action="Checkout" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="User.BillingEmail">Billing Email: </label>
+        <input asp-for="User.BillingEmail" class="form-control"/>
+        <span asp-validation-for="User.BillingEmail" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.PhoneNumber">Phone Number: </label>
+        <input asp-for="User.PhoneNumber" class="form-control"/>
+        <span asp-validation-for="User.PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.Address">Address: </label>
+        <input asp-for="User.Address" class="form-control"/>
+        <span asp-validation-for="User.Address" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.PostCode">Post Code: </label>
+        <input asp-for="User.PostCode" class="form-control"/>
+        <span asp-validation-for="User.PostCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.Suburb">Suburb: </label>
+        <input asp-for="User.Suburb" class="form-control"/>
+        <span asp-validation-for="User.Suburb" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.State">State: </label>
+        <input asp-for="User.State" class="form-control"/>
+        <span asp-validation-for="User.State" class="text-danger"></span>
+    </div>
+    <h2>Card details</h2>
+    <div class="form-group">
+        <label asp-for="User.CardNumber">Card Number: </label>
+        <input asp-for="User.CardNumber" class="form-control"/>
+        <span asp-validation-for="User.CardNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.CardOwner">Card Owner: </label>
+        <input asp-for="User.CardOwner" class="form-control"/>
+        <span asp-validation-for="User.CardOwner" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.CardCVV">Card CCV: </label>
+        <input asp-for="User.CardCVV" class="form-control"/>
+        <span asp-validation-for="User.CardCVV" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="User.CardExpiry">Card Expiry: </label>
+        <input asp-for="User.CardExpiry" class="form-control"/>
+        <span asp-validation-for="User.CardExpiry" class="text-danger"></span>
+    </div>
+    <div class="d-flex justify-content-between w-100 mt-3">
+        <a asp-controller="Cart"
+           asp-action="Index"
+           class="btn btn-warning">
+            Go Back
+        </a>
+        @if (Model != null || Model.Products.Count > 0)
+        {
+            @foreach (var cartItem in Model.Products)
+            {
+                <input type="hidden" name="Products[@cartItem.Product.ProductId].ProductId" value="@cartItem.Product.ProductId" />
+                <input type="hidden" name="Products[@cartItem.Product.ProductId].Quantity" value="@cartItem.Quantity" />
+            }
+            <button
+                type="submit"
+                class="btn btn-success">
+                Finalize Order
+            </button>
+        }
+
+    </div>
+</form>

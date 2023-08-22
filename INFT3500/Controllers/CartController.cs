@@ -11,11 +11,14 @@ namespace INFT3500.Controllers;
 public class CartController : Controller
 {
     private readonly StoreDbContext _dbContext;
-    private ProductController ProductController;
+    private ProductController _productController;
+    private AccountController _accountController;
+
     public CartController(StoreDbContext dbContext)
     {
         _dbContext = dbContext;
-        ProductController = new ProductController(_dbContext);
+        _productController = new ProductController(_dbContext);
+        _accountController = new AccountController(_dbContext);
     }
 
     [Authorize]
@@ -28,12 +31,13 @@ public class CartController : Controller
     [Authorize]
     public async Task<IActionResult> AddToCart(int id)
     {
-        var product = await ProductController.GetProductViewModelById(id);
+        var product = await _productController.GetProductViewModelById(id);
         if (product == null)
         {
             Console.WriteLine("Product not found");
             return null;
         }
+
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
         if (cart == null)
         {
@@ -73,6 +77,7 @@ public class CartController : Controller
         SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
         return RedirectToAction("Index", "Cart");
     }
+
     [Authorize]
     public async Task<IActionResult> DecrementQty(int id)
     {
@@ -84,21 +89,22 @@ public class CartController : Controller
         }
 
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
-        
-            var existingItem = FindCartItemById(id);
-            if (existingItem != null)
+
+        var existingItem = FindCartItemById(id);
+        if (existingItem != null)
+        {
+            var cartItem = cart.Find(p => p.Product.ProductId == id);
+            if (cartItem.Quantity > 1)
             {
-                var cartItem = cart.Find(p => p.Product.ProductId == id);
-                if(cartItem.Quantity > 1)
-                {
-                    cartItem.Quantity--;
-                }
-                else
-                {
-                    cart.RemoveAll(p => p.Product.ProductId == id);
-                }
+                cartItem.Quantity--;
             }
-            SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
+            else
+            {
+                cart.RemoveAll(p => p.Product.ProductId == id);
+            }
+        }
+
+        SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
 
         return RedirectToAction("Index", "Cart");
     }
@@ -131,6 +137,7 @@ public class CartController : Controller
                 cart.Find(p => p.Product.ProductId == cartItem.Product.ProductId).Quantity = cartItem.Quantity;
             }
         }
+
         SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
         return RedirectToAction("Index", "Cart");
     }
@@ -139,23 +146,109 @@ public class CartController : Controller
     [HttpGet]
     public async Task<IActionResult> Checkout()
     {
-        var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
-        return View(cart);
-    }
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> FinalizeCheckout()
-    {
+        Console.WriteLine("CALLED [GET] CHECKOUT!!!");
         var userName = User.Identity.Name;
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
         if (cart == null)
         {
             return RedirectToAction("Index", "Cart");
         }
-        var userInfo = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-        var order = new Order
+
+        var billingInfo = _accountController.GetUserViewModel(userName);
+        var cartPageViewModel = new CartPageViewModel
         {
+            Products = cart,
+            User = billingInfo,
         };
+        return View(cartPageViewModel);
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Checkout(CartPageViewModel cartPageViewModel)
+    {
+        Console.WriteLine("CALLED [POST] CHECKOUT!!!");
+        foreach (var property in cartPageViewModel.User.GetType().GetProperties())
+        {
+            Console.WriteLine(property.Name + " = " + property.GetValue(cartPageViewModel.User, null));
+        }
+        if (ModelState.IsValid)
+        {
+            var userName = User.Identity.Name;
+            var newToData = _dbContext.Tos.FirstOrDefault(u => u.UserName == userName);
+            //if a to exists, update it, else create a new one. use the viewmodel data
+            if (newToData != null)
+            {
+                newToData.StreetAddress = cartPageViewModel.User.Address;
+                newToData.Suburb = cartPageViewModel.User.Suburb;
+                newToData.State = cartPageViewModel.User.State;
+                newToData.PostCode = Convert.ToInt32(cartPageViewModel.User.PostCode);
+                newToData.PhoneNumber = cartPageViewModel.User.PhoneNumber;
+                newToData.Email = cartPageViewModel.User.BillingEmail;
+                _dbContext.Tos.Update(newToData);
+            }
+            else
+            {
+                var newTo = new To
+                {
+                    UserName = userName,
+                    StreetAddress = cartPageViewModel.User.Address,
+                    Suburb = cartPageViewModel.User.Suburb,
+                    State = cartPageViewModel.User.State,
+                    PostCode = Convert.ToInt32(cartPageViewModel.User.PostCode),
+                    PhoneNumber = cartPageViewModel.User.PhoneNumber,
+                    Email = cartPageViewModel.User.EmailAddress,
+                };
+                _dbContext.Tos.Add(newTo);
+            }
+            await _dbContext.SaveChangesAsync();
+            
+            var userToInfo = _dbContext.Tos.FirstOrDefault(u => u.UserName == userName);
+            var order = new Order
+            {
+                Customer = userToInfo.CustomerId,
+                StreetAddress = userToInfo.StreetAddress,
+                PostCode = Convert.ToInt32(userToInfo.PostCode),
+                Suburb = userToInfo.Suburb,
+                State = userToInfo.State,
+            };
+            _dbContext.Orders.Add(order);
+            await _dbContext.SaveChangesAsync();
+            Console.WriteLine(order.OrderId);
+            var productsInOrders = new List<ProductsInOrder>();
+            var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+            foreach (var cartItem in cart)
+            {
+                var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItem.Product.ProductId);
+                var stocktake = await _dbContext.Stocktakes.FirstOrDefaultAsync(s => s.ProductId == product.Id);
+                if (product == null || stocktake == null)
+                {
+                    Console.WriteLine("Product or stocktake not found");
+                    return null;
+                }
+
+                var productInOrder = new ProductsInOrder
+                {
+                    OrderId = order.OrderId,
+                    ProduktId = stocktake.ItemId,
+                    Quantity = cartItem.Quantity,
+                };
+                productsInOrders.Add(productInOrder);
+            }
+            foreach(ProductsInOrder productInOrder in productsInOrders)
+            {
+                Console.WriteLine(productInOrder.OrderId + " " + productInOrder.ProduktId + " "+ productInOrder.Quantity);
+                var insertSql = $"" +
+                                $"INSERT INTO ProductsInOrders (OrderId, ProduktId, Quantity) " +
+                                $"VALUES ({productInOrder.OrderId}, {productInOrder.ProduktId}, {productInOrder.Quantity})";
+                await _dbContext.Database.ExecuteSqlRawAsync(insertSql);
+            }
+            
+            await _dbContext.SaveChangesAsync();
+            ClearCart();
+            return RedirectToAction("Index", "Cart");
+        }
+        Console.WriteLine("MODELSTATE INVALID!!!");
         return RedirectToAction("Index", "Cart");
     }
 
@@ -168,5 +261,16 @@ public class CartController : Controller
         }
 
         return cart.FirstOrDefault(p => p.Product.ProductId == id);
+    }
+
+    private void ClearCart()
+    {
+        var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+        if (cart != null)
+        {
+            cart.Clear();
+            SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
+            Console.WriteLine("Cart Cleared!");
+        }
     }
 }
