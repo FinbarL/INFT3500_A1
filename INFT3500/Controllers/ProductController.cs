@@ -31,12 +31,12 @@ public class ProductController : Controller
         var productViewModels = await GetProductList(searchString);
         return View(productViewModels);
     }
+
     public async Task<IActionResult> Details(int id)
     {
         var productViewModel = await GetProductViewModelById(id);
         return View(productViewModel);
     }
-
 
 
     private async Task<List<ProductViewModel>> GetProductList(string? searchString)
@@ -61,23 +61,27 @@ public class ProductController : Controller
                              p.Name.Contains(searchString) || p.Author.Contains(searchString)) &&
                             p.Stocktakes.Count(s => s.Source.ExternalLink != null) > 0).ToListAsync();
         }
-        
+
         var productStocktakeList = new List<KeyValuePair<int, int>>();
         foreach (Product product in productList)
         {
-            var productsInOrderCount =  _dbContext.ProductsInOrders.Where(p => p.ProduktId == product.Id).Sum(pio => pio.Quantity);
+            var stocktake = product.Stocktakes.FirstOrDefault();
+            var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
+                .Sum(pio => pio.Quantity);
             if (productsInOrderCount > 0)
             {
                 productStocktakeList.Add(new KeyValuePair<int, int>(product.Id, productsInOrderCount ?? 0));
                 Console.WriteLine("PRODUCTID=" + product.Id);
             }
         }
+
         var products = productList.Select(ProductToViewModel).ToList();
         foreach (var productStocktake in productStocktakeList)
         {
             var product = products.First(p => p.ProductId == productStocktake.Key);
             product.Quantity -= productStocktake.Value;
         }
+
         return products;
     }
 
@@ -91,6 +95,7 @@ public class ProductController : Controller
         };
         return View(model);
     }
+
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public IActionResult AddItem(AddProductViewModel model)
@@ -120,10 +125,12 @@ public class ProductController : Controller
             };
             _dbContext.Stocktakes.Add(newStocktake);
             _dbContext.SaveChanges();
-            return RedirectToAction("Details", "Product", new {id = newProduct.Id});
+            return RedirectToAction("Details", "Product", new { id = newProduct.Id });
         }
+
         return View(model);
     }
+
     public IActionResult EditItem(int id)
     {
         var productViewModel = GetProductById(id);
@@ -139,10 +146,10 @@ public class ProductController : Controller
             StocktakeSourceId = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).SourceId,
             StocktakeQuantity = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Quantity,
             StocktakePrice = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Price,
-            
         };
         return View(addProductViewModel);
     }
+
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public async Task<IActionResult> EditItem(AddProductViewModel model)
@@ -152,8 +159,9 @@ public class ProductController : Controller
         if (ModelState.IsValid)
         {
             Console.WriteLine("MODELID=" + model.Id);
-            var existingItem =  _dbContext.Products.FirstOrDefault(p => p.Id == model.Id);
-            var existingStocktake = _dbContext.Stocktakes.FirstOrDefault(s => s.ProductId == model.Id && s.Source.ExternalLink != null);
+            var existingItem = _dbContext.Products.FirstOrDefault(p => p.Id == model.Id);
+            var existingStocktake =
+                _dbContext.Stocktakes.FirstOrDefault(s => s.ProductId == model.Id && s.Source.ExternalLink != null);
             Console.WriteLine("NEWSOURCE=" + model.StocktakeSourceId);
             Console.WriteLine("SOURCEID =" + existingStocktake.SourceId);
             if (existingItem != null)
@@ -172,13 +180,16 @@ public class ProductController : Controller
                     existingStocktake.Price = model.StocktakePrice;
                     //existingStocktake.SourceId = model.StocktakeSourceId;
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Details", "Product", new {id = existingItem.Id});
+                    return RedirectToAction("Details", "Product", new { id = existingItem.Id });
                 }
             }
+
             Console.WriteLine("ERROR!! @ EditItem");
         }
+
         return View(model);
     }
+
     [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public async Task<IActionResult> RemoveItem(int productId)
@@ -191,16 +202,17 @@ public class ProductController : Controller
             _dbContext.Stocktakes.RemoveRange(stocktakes);
             await _dbContext.SaveChangesAsync();
         }
+
         return RedirectToAction("Index", "Product");
-        
     }
+
     private static ProductViewModel ProductToViewModel(Product product)
     {
-
         if (product == null)
         {
             throw new ArgumentNullException(nameof(product));
         }
+
         var productViewModel = new ProductViewModel
         {
             ProductId = product.Id,
@@ -214,22 +226,23 @@ public class ProductController : Controller
                 Name = product.GenreNavigation.Name != null ? product.GenreNavigation.Name : String.Empty,
             },
             SubGenre = product.SubGenre,
-            Quantity = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0, 
-            Price = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Price).FirstOrDefault() ?? 0,
+            Quantity = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0,
+            Price =
+                product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Price).FirstOrDefault() ?? 0,
         };
         return productViewModel;
     }
+
     public async Task<ProductViewModel> GetProductViewModelById(int id)
     {
-        
-        
-        var productViewModel = _dbContext.Products
+        var product = await _dbContext.Products
             .Include(p => p.GenreNavigation)
             .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
-            .Where(p => p.Id == id)
-            .Select(p => ProductToViewModel(p)).First();
-
-        var productsInOrderCount =  _dbContext.ProductsInOrders.Where(p => p.ProduktId == id).Sum(pio => pio.Quantity);
+            .Where(p => p.Id == id).FirstOrDefaultAsync();
+        var stocktake = product.Stocktakes.FirstOrDefault();
+        var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
+            .Sum(pio => pio.Quantity);
+        var productViewModel = ProductToViewModel(product);
         if (productsInOrderCount > 0)
         {
             productViewModel.Quantity -= productsInOrderCount ?? 0;
@@ -239,11 +252,11 @@ public class ProductController : Controller
 
     private Product GetProductById(int id)
     {
-        var product =  _dbContext.Products
+        var product = _dbContext.Products
             .Include(p => p.GenreNavigation)
             .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
             .Where(p => p.Id == id)
-            .Select(p =>(p)).First();
+            .Select(p => (p)).First();
         return product;
     }
 }

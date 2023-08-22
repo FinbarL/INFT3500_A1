@@ -13,14 +13,14 @@ public class OrderController : Controller
     private readonly ILogger<OrderController> _logger;
     private readonly StoreDbContext _context;
     private ProductController _productController;
-    
+
     public OrderController(StoreDbContext context, ILogger<OrderController> logger)
     {
         _context = context;
         _logger = logger;
         _productController = new ProductController(_context);
     }
-    
+
     public async Task<IActionResult> Index()
     {
         var username = User.Identity.Name;
@@ -48,16 +48,17 @@ public class OrderController : Controller
             foreach(var productInOrder in order.ProductsInOrder)
             {
                 Console.WriteLine("CALLED!");
-                int? productId = productInOrder.Produkt.ProductId;
+                var productId = productInOrder.Produkt.ProductId;
                 if (productId != null)
                 {
-                    var productViewModel = await _productController.GetProductViewModelById(productId ?? 0);
+                    var productViewModel = await _productController.GetProductViewModelById((int)productId);
                     Console.WriteLine(JsonConvert.SerializeObject(productViewModel));
+                    productViewModel.Quantity = (int)productInOrder.Quantity!;
                     order.Products.Add(productViewModel);
                 }
             }
         }
         return View(orderHistoryViewModel);
     }
-    
+
 }
