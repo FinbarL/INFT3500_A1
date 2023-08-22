@@ -1,9 +1,6 @@
-@model TModel
-
-@{
-    Layout = null;
-}
-
+@model OrderHistoryViewModel
+@using Microsoft.AspNetCore.Identity
+@using INFT3500.Models
 <!DOCTYPE html>
 
 <html>
@@ -12,7 +9,37 @@
 </head>
 <body>
 <div>
-      
+    <div>
+        @foreach (var orders in @Model.Orders)
+        {
+            <h3>OrderNo: @orders.Order.OrderId</h3>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                <tr>
+                    <th>PID</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Published</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var products in orders.Products)
+                {
+                    <tr>
+                   <td>@products.ProductId</td>
+                   <td>@products.Name</td>
+                   <td>@products.Author</td>
+                   <td>@products.Published.ToString()</td>
+                   <td>@products.Price</td>
+                   <td>@products.Quantity</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>
 </body>
 </html>
