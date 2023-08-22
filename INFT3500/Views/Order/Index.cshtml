@@ -28,14 +28,17 @@
                 @foreach (var products in orders.Products)
                 {
                     <tr>
-                   <td>@products.ProductId</td>
-                   <td>@products.Name</td>
-                   <td>@products.Author</td>
-                   <td>@products.Published.ToString()</td>
-                   <td>@products.Price</td>
-                   <td>@products.Quantity</td>
+                        <td>@products.ProductId</td>
+                        <td>@products.Name</td>
+                        <td>@products.Author</td>
+                        <td>@products.Published.ToString()</td>
+                        <td>@products.Price</td>
+                        <td>@products.Quantity</td>
                     </tr>
                 }
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">Total Price</td>
+                    <td colspan="2" class="text-start">$@Math.Round(orders.Products.Sum(x => x.Price * x.Quantity), 2)</td>
                 </tbody>
             </table>
         }
