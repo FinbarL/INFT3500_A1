@@ -1,6 +1,7 @@
 using System.Net.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -25,19 +26,34 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult RecoverAccount()
     {
-        return View();
+        var recoverPasswordViewModel = new RecoverPasswordViewModel
+        {
+            Email = "",
+            TempPassword = null,
+        };
+        return View(recoverPasswordViewModel);
     }
 
     [HttpPost]
     public async Task<IActionResult> RecoverAccount(RecoverPasswordViewModel recoverPasswordViewModel)
     {
         var emailAddress = recoverPasswordViewModel.Email;
-        var user = _context.Users.FirstOrDefault(u => u.UserName == emailAddress);
+        var user = _context.Users.FirstOrDefault(u => u.UserName == emailAddress || u.Email == emailAddress);
+        //Generate temp password
         if (user != null)
         {
-            
+            var tempPassword = GenerateRandomPassword();
+            Console.WriteLine("Temp Password: " + tempPassword);
+            await ChangePassword(user.UserName, tempPassword);
+            Console.WriteLine(recoverPasswordViewModel.Email);
+            var viewModelWithTempPassword = new RecoverPasswordViewModel
+            {
+                Email = recoverPasswordViewModel.Email,
+                TempPassword = tempPassword
+            };
+            return View(viewModelWithTempPassword);
         }
-        Console.WriteLine(recoverPasswordViewModel.Email);
+        ModelState.AddModelError("Email", "User not found");
         return View(recoverPasswordViewModel);
     }
     
@@ -175,26 +191,8 @@ public class AccountController : Controller
         Console.WriteLine("invalid!!!");
         return View(model);
     }
-    private async Task<bool> ChangePassword(string userName, string password)
-    {
-        Console.WriteLine("Changing Password for: " + userName);
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName || u.Email == userName);
-        if(user == null)
-        {
-            Console.WriteLine("User not found");
-            return false;
-        }
-        var salt = GenerateSalt();
-        var hashedPassword = HashPassword(password, salt);
-        Console.WriteLine("Updating Password..");
-        user.Salt = salt;
-        user.HashPw = hashedPassword;
-        Console.WriteLine("Saving Changes..");
-        await _context.SaveChangesAsync();
-        Console.WriteLine("Password Changed");
-        return true;
-        //Update user account to new password
-    }
+
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -307,6 +305,22 @@ public class AccountController : Controller
         return View(user);
     }
 
+    private string GenerateRandomPassword()
+    {
+        const int PW_LENGTH = 16;
+        StringBuilder stringBuilder = new StringBuilder();  
+        Random random = new Random();
+
+        for (var i = 0; i < PW_LENGTH; i++)
+        {
+            var flt = random.NextDouble();
+            var shift = Convert.ToInt32(Math.Floor(81 * flt));
+            var letter = Convert.ToChar(shift + 41);
+            stringBuilder.Append(letter);  
+        }
+
+        return stringBuilder.ToString();
+    }
     private string GenerateSalt()
     {
         //I stole this from https://stackoverflow.com/questions/45220359/encrypting-and-verifying-a-hashed-password-with-salt-using-pbkdf2-encryption
@@ -337,6 +351,26 @@ public class AccountController : Controller
         string hashedPw = HashPassword(password, salt);
         Console.WriteLine("generatedHash: " + hashedPw.ToString());
         return hashedPw.Equals(hashedPassword);
+    }
+    private async Task<bool> ChangePassword(string userName, string password)
+    {
+        Console.WriteLine("Changing Password for: " + userName);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName || u.Email == userName);
+        if(user == null)
+        {
+            Console.WriteLine("User not found");
+            return false;
+        }
+        var salt = GenerateSalt();
+        var hashedPassword = HashPassword(password, salt);
+        Console.WriteLine("Updating Password..");
+        user.Salt = salt;
+        user.HashPw = hashedPassword;
+        Console.WriteLine("Saving Changes..");
+        await _context.SaveChangesAsync();
+        Console.WriteLine("Password Changed");
+        return true;
+        //Update user account to new password
     }
     private async Task Authenticate(User user)
     {

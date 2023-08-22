@@ -16,4 +16,19 @@
             <button type="submit" class="btn btn-primary mt-3">Email Link</button>
         </form>
     </div>
+
+
+    @if (Model.TempPassword != null)
+    {
+        <div class="fw-bold">Temp Password (copy this!): </div>
+        <h2 class="mt-2">@Model.TempPassword</h2>
+        <div>        <a asp-controller="Account"
+                        asp-action="Login"
+                        class="btn btn-success mt-3">
+            Login
+        </a>
+            </div>
+
+    }
+
 </div>
