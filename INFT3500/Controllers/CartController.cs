@@ -165,7 +165,7 @@ public class CartController : Controller
                 ViewBag.ErrorMessage = "Product or stocktake not found" + cartItem.Product.ProductId;
                 return View();
             }
-            var qtyLeft = GetCurrentQtyLeft(cartItem.Product.ProductId);
+            var qtyLeft = _productController.GetCurrentQtyLeft(cartItem.Product.ProductId);
             var qtyToOrder = cartItem.Quantity;
             Console.WriteLine("QTYLEFT:" + qtyLeft);
             if (qtyLeft < qtyToOrder)
@@ -179,7 +179,7 @@ public class CartController : Controller
             var errorMessage = "The following items were out of stock: ";
             foreach (var lowStockItem in lowStockItems)
             {
-                var currentQtyLeft = GetCurrentQtyLeft(lowStockItem.Product.ProductId);
+                var currentQtyLeft = _productController.GetCurrentQtyLeft(lowStockItem.Product.ProductId);
                 var qtySelected = lowStockItem.Quantity;
                 errorMessage += lowStockItem.Product.Name + " (Qty Left: " +currentQtyLeft + "), ";
                 await DecrementQty(lowStockItem.Product.ProductId, qtySelected - currentQtyLeft);
@@ -306,30 +306,6 @@ public class CartController : Controller
             SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
             Console.WriteLine("Cart Cleared!");
         }
-    }
-
-    private int GetCurrentQtyLeft(int id)
-    {
-        var product = _productController.GetProductById(id);
-        if (product == null)
-        {
-            Console.WriteLine("Product not found");
-            return 0;
-        }
-
-        var stocktake = product.Stocktakes.FirstOrDefault();
-        if (stocktake == null)
-        {
-            Console.WriteLine("Stocktake not found");
-            return 0;
-        }
-
-        var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
-            .Sum(pio => pio.Quantity);
-        var stocktakeQty = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0;
-        Console.WriteLine("StocktakeQty"+stocktakeQty);
-        Console.WriteLine("ProductsInOrderCount"+ productsInOrderCount);
-        return (int)(stocktakeQty - productsInOrderCount);
     }
 
 }

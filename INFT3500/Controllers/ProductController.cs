@@ -143,6 +143,7 @@ public class ProductController : Controller
             Genre = productViewModel.Genre,
             SubGenre = productViewModel.SubGenre,
             Id = productViewModel.Id,
+            RealQuantity = GetCurrentQtyLeft(productViewModel.Id),
             StocktakeSourceId = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).SourceId,
             StocktakeQuantity = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Quantity,
             StocktakePrice = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Price,
@@ -258,5 +259,28 @@ public class ProductController : Controller
             .Where(p => p.Id == id)
             .Select(p => (p)).First();
         return product;
+    }
+    public int GetCurrentQtyLeft(int id)
+    {
+        var product = GetProductById(id);
+        if (product == null)
+        {
+            Console.WriteLine("Product not found");
+            return 0;
+        }
+
+        var stocktake = product.Stocktakes.FirstOrDefault();
+        if (stocktake == null)
+        {
+            Console.WriteLine("Stocktake not found");
+            return 0;
+        }
+
+        var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
+            .Sum(pio => pio.Quantity);
+        var stocktakeQty = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0;
+        Console.WriteLine("StocktakeQty"+stocktakeQty);
+        Console.WriteLine("ProductsInOrderCount"+ productsInOrderCount);
+        return (int)(stocktakeQty - productsInOrderCount);
     }
 }
