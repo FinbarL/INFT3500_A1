@@ -133,7 +133,31 @@ public class ProductController : Controller
 
     public IActionResult EditItem(int id)
     {
+        Console.WriteLine("EditItem [GET] Called");
         var productViewModel = GetProductById(id);
+        if (productViewModel == null)
+        {
+            Console.WriteLine("Product not found");
+            return RedirectToAction("Index", "Product");
+        }
+
+        //logg all values of productViewModel
+        Console.WriteLine("ID:" + productViewModel.Id);
+        Console.WriteLine("Name:" + productViewModel.Name);
+        Console.WriteLine("Author:" + productViewModel.Author);
+        Console.WriteLine("Description:" + productViewModel.Description);
+        Console.WriteLine("Published:" + productViewModel.Published);
+        Console.WriteLine("Genre:" + productViewModel.Genre);
+        Console.WriteLine("SubGenre:" + productViewModel.SubGenre);
+        Console.WriteLine("LastUpdatedBy:" + productViewModel.LastUpdatedBy);
+        Console.WriteLine("LastUpdated:" + productViewModel.LastUpdated);
+        Console.WriteLine("StocktakeSourceId:" +
+                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId);
+        Console.WriteLine("StocktakeQuantity:" +
+                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Quantity);
+        Console.WriteLine("StocktakePrice:" +
+                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Price);
+
         var addProductViewModel = new AddProductViewModel
         {
             Name = productViewModel.Name,
@@ -144,9 +168,9 @@ public class ProductController : Controller
             SubGenre = productViewModel.SubGenre,
             Id = productViewModel.Id,
             RealQuantity = GetCurrentQtyLeft(productViewModel.Id),
-            StocktakeSourceId = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).SourceId,
-            StocktakeQuantity = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Quantity,
-            StocktakePrice = productViewModel.Stocktakes.First(s => s.Source.ExternalLink != null).Price,
+            StocktakeSourceId = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId ?? 0,
+            StocktakeQuantity = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Quantity ?? 0,
+            StocktakePrice = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Price ?? 0,
         };
         return View(addProductViewModel);
     }
@@ -162,25 +186,43 @@ public class ProductController : Controller
             Console.WriteLine("MODELID=" + model.Id);
             var existingItem = _dbContext.Products.FirstOrDefault(p => p.Id == model.Id);
             var existingStocktake =
-                _dbContext.Stocktakes.FirstOrDefault(s => s.ProductId == model.Id && s.Source.ExternalLink != null);
+                _dbContext.Stocktakes.FirstOrDefault(s => s.Source != null && s.ProductId == model.Id && s.Source.ExternalLink != null);
             Console.WriteLine("NEWSOURCE=" + model.StocktakeSourceId);
-            Console.WriteLine("SOURCEID =" + existingStocktake.SourceId);
+            Console.WriteLine("SOURCEID =" + existingStocktake?.SourceId);
             if (existingItem != null)
             {
                 existingItem.Name = model.Name;
                 existingItem.Author = model.Author;
                 existingItem.Description = model.Description;
                 existingItem.Published = model.Published;
-                //existingItem.Genre = model.Genre;
+                existingItem.Genre = model.Genre;
                 existingItem.SubGenre = model.SubGenre;
-                existingItem.LastUpdatedBy = User.Identity.Name;
+                existingItem.LastUpdatedBy = User.Identity?.Name;
                 existingItem.LastUpdated = DateTime.Now;
                 if (existingStocktake != null)
                 {
                     existingStocktake.Quantity = model.StocktakeQuantity;
                     existingStocktake.Price = model.StocktakePrice;
-                    //existingStocktake.SourceId = model.StocktakeSourceId;
-                    _dbContext.SaveChanges();
+                    existingStocktake.SourceId = model.StocktakeSourceId;
+                    await _dbContext.SaveChangesAsync();
+                    return RedirectToAction("Details", "Product", new { id = existingItem.Id });
+                }
+                else
+                {
+                    Console.WriteLine("ProductId = " + existingItem.Id);
+                    Console.WriteLine("SourceId = " + model.StocktakeSourceId);
+                    Console.WriteLine("Quantity = " + model.StocktakeQuantity);
+                    Console.WriteLine("Price = " + model.StocktakePrice);
+                    Console.WriteLine("GenreId = " + model.Genre);
+                    var newStocktake = new Stocktake
+                    {
+                        ProductId = existingItem.Id,
+                        Source = _dbContext.Sources.First(s => s.ExternalLink != null && s.Genre == model.Genre),
+                        Quantity = model.StocktakeQuantity,
+                        Price = model.StocktakePrice,
+                    };
+                    _dbContext.Stocktakes.Add(newStocktake);
+                    await _dbContext.SaveChangesAsync();
                     return RedirectToAction("Details", "Product", new { id = existingItem.Id });
                 }
             }
@@ -248,6 +290,7 @@ public class ProductController : Controller
         {
             productViewModel.Quantity -= productsInOrderCount ?? 0;
         }
+
         return productViewModel;
     }
 
@@ -260,6 +303,7 @@ public class ProductController : Controller
             .Select(p => (p)).First();
         return product;
     }
+
     public int GetCurrentQtyLeft(int id)
     {
         var product = GetProductById(id);
@@ -278,9 +322,10 @@ public class ProductController : Controller
 
         var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
             .Sum(pio => pio.Quantity);
-        var stocktakeQty = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0;
-        Console.WriteLine("StocktakeQty"+stocktakeQty);
-        Console.WriteLine("ProductsInOrderCount"+ productsInOrderCount);
+        var stocktakeQty = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ??
+                           0;
+        Console.WriteLine("StocktakeQty" + stocktakeQty);
+        Console.WriteLine("ProductsInOrderCount" + productsInOrderCount);
         return (int)(stocktakeQty - productsInOrderCount);
     }
 }

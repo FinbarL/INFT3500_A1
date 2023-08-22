@@ -53,7 +53,7 @@
                 <label asp-for="Genre">Genre: </label>
                 <select
                     asp-for="Genre"
-                    disabled
+                    readonly
                     asp-items="Model.GenreList"
                     onchange="updateStocktakeSource(this.value)">
                 </select>
@@ -73,7 +73,7 @@
             <h2>Stocktake Values</h2>
             <div class="form-group mt-2">
                 <label asp-for="StocktakeSourceId">Source: </label>
-                <select asp-for="StocktakeSourceId" disabled asp-items="Model.SourceList"></select>
+                <select asp-for="StocktakeSourceId" readonly asp-items="Model.SourceList"></select>
                 <span asp-validation-for="StocktakeSourceId" class="text-danger"></span>
             </div>
             <div class="mt-2">
