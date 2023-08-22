@@ -53,11 +53,9 @@
                 <label asp-for="Genre">Genre: </label>
                 <select
                     asp-for="Genre"
-                    readonly
                     asp-items="Model.GenreList"
                     onchange="updateStocktakeSource(this.value)">
                 </select>
-                <h6 class="text-danger mt-2">* Note: Genre cannot be changed, please create a new item to modify</h6>
                 <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -73,7 +71,7 @@
             <h2>Stocktake Values</h2>
             <div class="form-group mt-2">
                 <label asp-for="StocktakeSourceId">Source: </label>
-                <select asp-for="StocktakeSourceId" readonly asp-items="Model.SourceList"></select>
+                <select asp-for="StocktakeSourceId" disabled asp-items="Model.SourceList"></select>
                 <span asp-validation-for="StocktakeSourceId" class="text-danger"></span>
             </div>
             <div class="mt-2">
@@ -89,6 +87,7 @@
                 <input asp-for="StocktakePrice" class="form-control"/>
                 <span asp-validation-for="StocktakePrice" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="StocktakeSourceId" />
             <button type="submit" class="btn btn-primary mt-3">Edit Product</button>
         </form>
     </div>

@@ -209,11 +209,6 @@ public class ProductController : Controller
                 }
                 else
                 {
-                    Console.WriteLine("ProductId = " + existingItem.Id);
-                    Console.WriteLine("SourceId = " + model.StocktakeSourceId);
-                    Console.WriteLine("Quantity = " + model.StocktakeQuantity);
-                    Console.WriteLine("Price = " + model.StocktakePrice);
-                    Console.WriteLine("GenreId = " + model.Genre);
                     var newStocktake = new Stocktake
                     {
                         ProductId = existingItem.Id,
