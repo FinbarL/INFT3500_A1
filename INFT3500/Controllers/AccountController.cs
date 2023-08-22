@@ -141,17 +141,33 @@ public class AccountController : Controller
             Name = user.Name,
             IsAdmin = user.IsAdmin ?? false,
             IsStaff = user.IsStaff ?? false,
-            BillingEmail = userTo.Email ?? "",
-            PhoneNumber = userTo.PhoneNumber ?? "",
-            Address = userTo.StreetAddress ?? "",
-            PostCode = userTo.PostCode.ToString() ?? "",
-            Suburb = userTo.Suburb ?? "",
-            State = userTo.State ?? "",
-            CardNumber = userTo.CardNumber ?? "",
-            CardOwner = userTo.CardOwner ?? "",
-            CardExpiry = userTo.Expiry ?? "",
-            CardCVV = userTo.Cvv.ToString() ?? ""
         };
+        if (userTo != null)
+        {
+            userViewModel.BillingEmail = userTo.Email ?? "";
+            userViewModel.PhoneNumber = userTo.PhoneNumber ?? "";
+            userViewModel.Address = userTo.StreetAddress ?? "";
+            userViewModel.PostCode = userTo.PostCode.ToString() ?? "";
+            userViewModel.Suburb = userTo.Suburb ?? "";
+            userViewModel.State = userTo.State ?? "";
+            userViewModel.CardNumber = userTo.CardNumber ?? "";
+            userViewModel.CardOwner = userTo.CardOwner ?? "";
+            userViewModel.CardExpiry = userTo.Expiry ?? "";
+            userViewModel.CardCVV = userTo.Cvv.ToString() ?? "";
+        }
+        else
+        {
+            userViewModel.BillingEmail = "";
+            userViewModel.PhoneNumber = "";
+            userViewModel.Address = "";
+            userViewModel.PostCode = "";
+            userViewModel.Suburb = "";
+            userViewModel.State = "";
+            userViewModel.CardNumber = "";
+            userViewModel.CardOwner = "";
+            userViewModel.CardExpiry = "";
+            userViewModel.CardCVV = "";
+        }
         return userViewModel;
     }
     [HttpPost]
@@ -230,7 +246,7 @@ public class AccountController : Controller
         return RedirectToAction("AdminPage", "Home");
     }
 
-    //UPDATE PASSWORD FOR USER 
+    //UPDATE PASSWORD FOR USER
     [Authorize]
     [HttpGet]
     public IActionResult UpdatePassword()
@@ -348,7 +364,6 @@ public class AccountController : Controller
 
             var newUserDetails = new To
             {
-                CustomerId = newUser.UserId,
                 UserName = newUser.UserName,
                 Email = model.BillingEmail,
                 PhoneNumber = model.PhoneNumber,

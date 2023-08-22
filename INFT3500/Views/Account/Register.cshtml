@@ -11,7 +11,8 @@
         You are already logged in!
     </div>
 }
-@if (User.IsInRole("Admin"))
+@* FIX THIS (add better logic) *@
+@if (User.IsInRole("Admin") || true)
 {
     <div>
        NOTE: You are creating a new user
