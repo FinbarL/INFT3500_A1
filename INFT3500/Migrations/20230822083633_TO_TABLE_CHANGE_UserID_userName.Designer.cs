@@ -4,6 +4,7 @@ using INFT3500.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace INFT3500.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230822083633_TO_TABLE_CHANGE_UserID_userName")]
+    partial class TO_TABLE_CHANGE_UserID_userName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,8 +105,8 @@ namespace INFT3500.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateOnly?>("Published")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("Published")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SubGenre")
                         .HasColumnType("nvarchar(max)")
@@ -168,7 +171,8 @@ namespace INFT3500.Migrations
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
 
@@ -176,13 +180,15 @@ namespace INFT3500.Migrations
                         .HasColumnType("float");
 
                     b.Property<int?>("ProductId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ProductId");
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<int?>("SourceId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("SourceId");
 
                     b.HasKey("ItemId");
 
