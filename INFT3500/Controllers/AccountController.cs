@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 public class AccountController : Controller
 {
     private readonly StoreDbContext _context;
-
     public AccountController(StoreDbContext context)
     {
         _context = context;
@@ -23,7 +22,25 @@ public class AccountController : Controller
     {
         return View();
     }
+    [HttpGet]
+    public IActionResult RecoverAccount()
+    {
+        return View();
+    }
 
+    [HttpPost]
+    public async Task<IActionResult> RecoverAccount(RecoverPasswordViewModel recoverPasswordViewModel)
+    {
+        var emailAddress = recoverPasswordViewModel.Email;
+        var user = _context.Users.FirstOrDefault(u => u.UserName == emailAddress);
+        if (user != null)
+        {
+            
+        }
+        Console.WriteLine(recoverPasswordViewModel.Email);
+        return View(recoverPasswordViewModel);
+    }
+    
     public IActionResult Register()
     {
         return View();
@@ -40,7 +57,7 @@ public class AccountController : Controller
             Email = user.Email,
             Name = user.Name,
             IsAdmin = user.IsAdmin ?? false,
-            IsStaff = user.IsStaff ?? false
+            IsStaff = user.IsStaff ?? false,
         };
         return View(updateUserViewModel);
     }
@@ -109,7 +126,75 @@ public class AccountController : Controller
         return RedirectToAction("AdminPage", "Home");
 
     }
+    
+    //UPDATE PASSWORD FOR USER 
+    [Authorize]
+    [HttpGet]
+    public IActionResult UpdatePassword()
+    {
+        var userName = User.Identity.Name;
+        var updatePasswordViewModel = new UpdatePasswordViewModel
+        {
+            UserName = userName,
+        };
+        return View(updatePasswordViewModel);
+    }
+    [HttpGet]
+    [Route("Account/UpdatePassword/{userName}")]
+    public async Task<IActionResult> UpdatePassword(string userName)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        var updatePasswordViewModel = new UpdatePasswordViewModel
+        {
+            UserName = user.UserName,
+        };
+        return View(updatePasswordViewModel);
+    }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdatePassword(UpdatePasswordViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            if (model.Password == model.ConfirmPassword)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
+                if(user != null)
+                {
+                    var isChanged = await ChangePassword(model.UserName, model.ConfirmPassword);
+                    Console.WriteLine("Password Changed: " + isChanged);
+                    return RedirectToAction("UserInfo", "Account", new {userName = model.UserName});
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
+            }
+        }
+        Console.WriteLine("invalid!!!");
+        return View(model);
+    }
+    private async Task<bool> ChangePassword(string userName, string password)
+    {
+        Console.WriteLine("Changing Password for: " + userName);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName || u.Email == userName);
+        if(user == null)
+        {
+            Console.WriteLine("User not found");
+            return false;
+        }
+        var salt = GenerateSalt();
+        var hashedPassword = HashPassword(password, salt);
+        Console.WriteLine("Updating Password..");
+        user.Salt = salt;
+        user.HashPw = hashedPassword;
+        Console.WriteLine("Saving Changes..");
+        await _context.SaveChangesAsync();
+        Console.WriteLine("Password Changed");
+        return true;
+        //Update user account to new password
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -255,8 +340,6 @@ public class AccountController : Controller
     }
     private async Task Authenticate(User user)
     {
-
-
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),

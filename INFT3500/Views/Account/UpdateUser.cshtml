@@ -13,7 +13,7 @@
             <div class="form-group">
                 <label asp-for="UserName">Username</label>
                 <input readonly asp-for="UserName" class="form-control"/>
-            <span asp-validation-for="UserName" class="text-danger"></span>
+                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Name">Name</label>
@@ -29,7 +29,7 @@
             {
                 <div class="form-group">
                     <label asp-for="IsAdmin">Is Admin?</label>
-                    <input asp-for="IsAdmin" />
+                    <input asp-for="IsAdmin"/>
                     <span asp-validation-for="IsAdmin" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -37,7 +37,8 @@
                     <input asp-for="IsStaff"/>
                     <span asp-validation-for="IsStaff" class="text-danger"></span>
                 </div>
-            } else
+            }
+            else
             {
                 <div class="form-group">
                     <label asp-for="IsAdmin">Is Admin?</label>
@@ -46,12 +47,19 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="IsStaff">IsStaff?</label>
-                    <input asp-for="IsStaff"  onclick="return false;"/>
+                    <input asp-for="IsStaff" onclick="return false;"/>
                     <span asp-validation-for="IsStaff" class="text-danger"></span>
                 </div>
             }
-
             <button type="submit" class="btn btn-primary mt-3">Update Details</button>
+        </form>
+        <form asp-controller="Account" asp-action="UpdatePassword" method="Get">
+                                            <a asp-controller="Account"
+                                               asp-action="UpdatePassword"
+                                               asp-route-id="@Model.UserName"
+                                               class="btn btn-warning mt-3">
+                                                Update Password
+                                            </a>
         </form>
     </div>
 </div>
