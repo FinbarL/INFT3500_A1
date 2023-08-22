@@ -250,7 +250,7 @@ public class ProductController : Controller
         return productViewModel;
     }
 
-    private Product GetProductById(int id)
+    public Product GetProductById(int id)
     {
         var product = _dbContext.Products
             .Include(p => p.GenreNavigation)

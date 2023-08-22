@@ -37,7 +37,6 @@ public class CartController : Controller
             Console.WriteLine("Product not found");
             return null;
         }
-
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
         if (cart == null)
         {
@@ -79,7 +78,7 @@ public class CartController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> DecrementQty(int id)
+    public async Task<IActionResult> DecrementQty(int id, int amountRemoved = 1)
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
         if (product == null)
@@ -94,9 +93,9 @@ public class CartController : Controller
         if (existingItem != null)
         {
             var cartItem = cart.Find(p => p.Product.ProductId == id);
-            if (cartItem.Quantity > 1)
+            if (cartItem.Quantity > amountRemoved)
             {
-                cartItem.Quantity--;
+                cartItem.Quantity -= amountRemoved;
             }
             else
             {
@@ -155,6 +154,42 @@ public class CartController : Controller
         }
 
         var billingInfo = _accountController.GetUserViewModel(userName);
+        List<CartViewModel> lowStockItems = new List<CartViewModel>();
+        foreach (var cartItem in cart)
+        {
+            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItem.Product.ProductId);
+            var stocktake = await _dbContext.Stocktakes.FirstOrDefaultAsync(s => s.ProductId == product.Id);
+            if (product == null || stocktake == null)
+            {
+                Console.WriteLine("Product or stocktake not found");
+                ViewBag.ErrorMessage = "Product or stocktake not found" + cartItem.Product.ProductId;
+                return View();
+            }
+            var qtyLeft = GetCurrentQtyLeft(cartItem.Product.ProductId);
+            var qtyToOrder = cartItem.Quantity;
+            Console.WriteLine("QTYLEFT:" + qtyLeft);
+            if (qtyLeft < qtyToOrder)
+            {
+                lowStockItems.Add(cartItem);
+            }
+        }
+        //check if any items are low on stock
+        if (lowStockItems.Count > 0)
+        {
+            var errorMessage = "The following items were out of stock: ";
+            foreach (var lowStockItem in lowStockItems)
+            {
+                var currentQtyLeft = GetCurrentQtyLeft(lowStockItem.Product.ProductId);
+                var qtySelected = lowStockItem.Quantity;
+                errorMessage += lowStockItem.Product.Name + " (Qty Left: " +currentQtyLeft + "), ";
+                await DecrementQty(lowStockItem.Product.ProductId, qtySelected - currentQtyLeft);
+                cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+            }
+            errorMessage += "Your cart has been automatically adjusted";
+            ViewBag.ErrorMessage = errorMessage;
+            Console.WriteLine("No stock left");
+        }
+
         var cartPageViewModel = new CartPageViewModel
         {
             Products = cart,
@@ -167,11 +202,6 @@ public class CartController : Controller
     [HttpPost]
     public async Task<IActionResult> Checkout(CartPageViewModel cartPageViewModel)
     {
-        Console.WriteLine("CALLED [POST] CHECKOUT!!!");
-        foreach (var property in cartPageViewModel.User.GetType().GetProperties())
-        {
-            Console.WriteLine(property.Name + " = " + property.GetValue(cartPageViewModel.User, null));
-        }
         if (ModelState.IsValid)
         {
             var userName = User.Identity.Name;
@@ -201,8 +231,9 @@ public class CartController : Controller
                 };
                 _dbContext.Tos.Add(newTo);
             }
+
             await _dbContext.SaveChangesAsync();
-            
+
             var userToInfo = _dbContext.Tos.FirstOrDefault(u => u.UserName == userName);
             var order = new Order
             {
@@ -224,9 +255,9 @@ public class CartController : Controller
                 if (product == null || stocktake == null)
                 {
                     Console.WriteLine("Product or stocktake not found");
-                    return null;
+                    ViewBag.ErrorMessage = "Product or stocktake not found";
+                    return View(cartPageViewModel);
                 }
-
                 var productInOrder = new ProductsInOrder
                 {
                     OrderId = order.OrderId,
@@ -235,19 +266,22 @@ public class CartController : Controller
                 };
                 productsInOrders.Add(productInOrder);
             }
-            foreach(ProductsInOrder productInOrder in productsInOrders)
+
+            foreach (ProductsInOrder productInOrder in productsInOrders)
             {
-                Console.WriteLine(productInOrder.OrderId + " " + productInOrder.ProduktId + " "+ productInOrder.Quantity);
+                Console.WriteLine(productInOrder.OrderId + " " + productInOrder.ProduktId + " " +
+                                  productInOrder.Quantity);
                 var insertSql = $"" +
                                 $"INSERT INTO ProductsInOrders (OrderId, ProduktId, Quantity) " +
                                 $"VALUES ({productInOrder.OrderId}, {productInOrder.ProduktId}, {productInOrder.Quantity})";
                 await _dbContext.Database.ExecuteSqlRawAsync(insertSql);
             }
-            
+
             await _dbContext.SaveChangesAsync();
             ClearCart();
             return RedirectToAction("Index", "Cart");
         }
+
         Console.WriteLine("MODELSTATE INVALID!!!");
         return RedirectToAction("Index", "Cart");
     }
@@ -273,4 +307,29 @@ public class CartController : Controller
             Console.WriteLine("Cart Cleared!");
         }
     }
+
+    private int GetCurrentQtyLeft(int id)
+    {
+        var product = _productController.GetProductById(id);
+        if (product == null)
+        {
+            Console.WriteLine("Product not found");
+            return 0;
+        }
+
+        var stocktake = product.Stocktakes.FirstOrDefault();
+        if (stocktake == null)
+        {
+            Console.WriteLine("Stocktake not found");
+            return 0;
+        }
+
+        var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
+            .Sum(pio => pio.Quantity);
+        var stocktakeQty = product.Stocktakes.Where(s => s.Source.ExternalLink != null).Select(s => s.Quantity).Sum() ?? 0;
+        Console.WriteLine("StocktakeQty"+stocktakeQty);
+        Console.WriteLine("ProductsInOrderCount"+ productsInOrderCount);
+        return (int)(stocktakeQty - productsInOrderCount);
+    }
+
 }

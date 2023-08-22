@@ -6,6 +6,12 @@
 }
 
 <h2>Checkout</h2>
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        <p>@ViewBag.ErrorMessage</p>
+    </div>
+}
 <table class="table table-bordered">
     <thead class="table-light">
     <tr>
@@ -37,7 +43,7 @@
                 <td>@cartItem.Quantity</td>
             </tr>
         }
-        //total price for cart 
+        //total price for cart
         <tr>
             <td colspan="4" class="text-end fw-bold">Total Price</td>
             <td colspan="2" class="text-start">$@Math.Round(Model.Products.Sum(x => x.Product.Price * x.Quantity), 2)</td>
