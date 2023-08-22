@@ -360,6 +360,7 @@ namespace INFT3500.Migrations
                     b.HasOne("INFT3500.Models.Product", "Product")
                         .WithMany("Stocktakes")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Stocktake_Product");
 
                     b.HasOne("INFT3500.Models.Source", "Source")

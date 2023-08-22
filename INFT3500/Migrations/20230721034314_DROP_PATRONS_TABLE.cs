@@ -11,7 +11,6 @@ namespace INFT3500.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
-
         }
 
         /// <inheritdoc />
