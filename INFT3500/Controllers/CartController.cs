@@ -136,10 +136,27 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpGet]
     public async Task<IActionResult> Checkout()
     {
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
         return View(cart);
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> FinalizeCheckout()
+    {
+        var userName = User.Identity.Name;
+        var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+        if (cart == null)
+        {
+            return RedirectToAction("Index", "Cart");
+        }
+        var userInfo = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+        var order = new Order
+        {
+        };
+        return RedirectToAction("Index", "Cart");
     }
 
     private CartViewModel FindCartItemById(int id)

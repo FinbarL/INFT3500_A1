@@ -43,14 +43,30 @@ public class ProductController : Controller
     {
         if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
         {
-            var products = _dbContext.Products
+            var productList = await _dbContext.Products
                 .Include(p => p.GenreNavigation)
                 .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
                 .Where(p => p.Author != null && p.Name != null &&
                             (searchString == null || searchString == "" ||
-                             p.Name.Contains(searchString) || p.Author.Contains(searchString)))
-                .Select(p => ProductToViewModel(p));
-            return await products.ToListAsync();
+                             p.Name.Contains(searchString) || p.Author.Contains(searchString))).ToListAsync();
+            
+            var productStocktakeList = new List<KeyValuePair<int, int>>();
+            foreach (Product product in productList)
+            {
+                var productsInOrderCount =  _dbContext.ProductsInOrders.Where(p => p.ProduktId == product.Id).Sum(pio => pio.Quantity);
+                if (productsInOrderCount > 0)
+                {
+                    productStocktakeList.Add(new KeyValuePair<int, int>(product.Id, productsInOrderCount ?? 0));
+                    Console.WriteLine("PRODUCTID=" + product.Id);
+                }
+            }
+            var products = productList.Select(ProductToViewModel).ToList();
+            foreach (var productStocktake in productStocktakeList)
+            {
+                var product = products.First(p => p.ProductId == productStocktake.Key);
+                product.Quantity -= productStocktake.Value;
+            }
+            return products;
         }
         else
         {

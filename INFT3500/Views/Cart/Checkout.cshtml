@@ -18,31 +18,43 @@
     </tr>
     </thead>
     <tbody>
-@if (Model == null || Model.Count == 0)
-{
-    <tr>
-        <td colspan="5">No items in cart</td>
-    </tr>
-}
-else
-{
-    foreach (var cartItem in Model)
+    @if (Model == null || Model.Count == 0)
     {
         <tr>
-            <td>@cartItem.Product.ProductId</td>
-            <td>@cartItem.Product.Name</td>
-            <td>@cartItem.Product.Author</td>
-            <td>@cartItem.Product.Published.ToString()</td>
-            <td>@cartItem.Product.Price</td>
-            <td>@cartItem.Quantity</td>
+            <td colspan="5">No items in cart</td>
         </tr>
     }
-}
-
-            <a asp-controller="Cart"
-               asp-action="Checkout"
-               class="btn btn-success">
-                Go Back
-            </a>
+    else
+    {
+        foreach (var cartItem in Model)
+        {
+            <tr>
+                <td>@cartItem.Product.ProductId</td>
+                <td>@cartItem.Product.Name</td>
+                <td>@cartItem.Product.Author</td>
+                <td>@cartItem.Product.Published.ToString()</td>
+                <td>@cartItem.Product.Price</td>
+                <td>@cartItem.Quantity</td>
+            </tr>
+        }
+        //total price for cart 
+        <tr>
+            <td colspan="4" class="text-end fw-bold">Total Price</td>
+            <td colspan="2" class="text-start">$@Math.Round(Model.Sum(x => x.Product.Price * x.Quantity), 2)</td>
+        </tr>
+    }
     </tbody>
 </table>
+<div class="d-flex justify-content-between w-100 " >
+  <a asp-controller="Cart"
+     asp-action="Index"
+     class="btn btn-warning">
+      Go Back
+  </a>
+  <a asp-controller="Cart"
+     asp-action="FinalizeCheckout"
+     method="post"
+     class="btn btn-success">
+      Finalize Order
+  </a>  
+</div>
