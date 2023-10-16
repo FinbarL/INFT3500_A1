@@ -15,12 +15,9 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdminRole",
-        policy => policy.RequireRole("Admin"));
-    options.AddPolicy("RequireCustomerRole",
-        policy => policy.RequireRole("Customer"));
-    options.AddPolicy("RequireStaffRole",
-        policy => policy.RequireRole("Staff"));
+    options.AddPolicy("RequireAdminRole",policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireCustomerRole",policy => policy.RequireRole("Customer"));
+    options.AddPolicy("RequireStaffRole",policy => policy.RequireRole("Staff"));
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging(logging =>
@@ -31,17 +28,14 @@ builder.Services.AddLogging(logging =>
 
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
-    options.UseSqlServer(
-        builder.Configuration["ConnectionStrings:StoreDbContextConnection"]);
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:StoreDbContextConnection"]);
 });
 builder.Services.AddSession();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 } else
 {
