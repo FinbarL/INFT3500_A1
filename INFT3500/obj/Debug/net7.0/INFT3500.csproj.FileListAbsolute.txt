@@ -174,3 +174,8 @@ C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\refint\INFT3
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.pdb
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.genruntimeconfig.cache
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\ref\INFT3500.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.OpenApi.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.MvcApplicationPartsAssemblyInfo.cs

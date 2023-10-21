@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
 namespace INFT3500.Controllers;
-
+[Route("[controller]")]
 public class OrderController : Controller
 {
     private readonly ILogger<OrderController> _logger;
@@ -20,7 +20,7 @@ public class OrderController : Controller
         _logger = logger;
         _productController = new ProductController(_context);
     }
-
+    [HttpGet("[action]")]
     public async Task<IActionResult> Index()
     {
         var username = User.Identity.Name;

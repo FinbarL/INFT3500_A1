@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace INFT3500.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-
+[Route("[controller]")]
 public class ProductController : Controller
 {
     private readonly StoreDbContext _dbContext;
@@ -18,20 +18,20 @@ public class ProductController : Controller
         _dbContext = dbContext;
     }
 
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<IActionResult> Index()
     {
         var productViewModels = await GetProductList(null);
         return View(productViewModels);
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> Index(string searchString)
     {
         var productViewModels = await GetProductList(searchString);
         return View(productViewModels);
     }
-
+    [HttpGet("[action]")]
     public async Task<IActionResult> Details(int id)
     {
         var productViewModel = await GetProductViewModelById(id);
@@ -86,6 +86,7 @@ public class ProductController : Controller
     }
 
     [Authorize(Policy = "RequireAdminRole")]
+    [HttpGet("[action]")]
     public IActionResult AddItem()
     {
         Console.WriteLine("Called");
@@ -97,7 +98,7 @@ public class ProductController : Controller
     }
 
     [Authorize(Policy = "RequireAdminRole")]
-    [HttpPost]
+    [HttpPost("[action]")]
     public IActionResult AddItem(AddProductViewModel model)
     {
         Console.WriteLine(model.Published);
@@ -130,7 +131,7 @@ public class ProductController : Controller
 
         return View(model);
     }
-
+    [HttpGet("[action]")]
     public IActionResult EditItem(int id)
     {
         Console.WriteLine("EditItem [GET] Called");
@@ -176,7 +177,7 @@ public class ProductController : Controller
     }
 
     [Authorize(Policy = "RequireAdminRole")]
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> EditItem(AddProductViewModel model)
     {
         Console.WriteLine(model.Published);
@@ -229,7 +230,7 @@ public class ProductController : Controller
     }
 
     [Authorize(Policy = "RequireAdminRole")]
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RemoveItem(int productId)
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
@@ -271,6 +272,7 @@ public class ProductController : Controller
         return productViewModel;
     }
 
+    [NonAction]
     public async Task<ProductViewModel> GetProductViewModelById(int id)
     {
         var product = await _dbContext.Products
@@ -289,7 +291,7 @@ public class ProductController : Controller
         return productViewModel;
     }
 
-    public Product GetProductById(int id)
+    private Product GetProductById(int id)
     {
         var product = _dbContext.Products
             .Include(p => p.GenreNavigation)
@@ -298,7 +300,7 @@ public class ProductController : Controller
             .Select(p => (p)).First();
         return product;
     }
-
+    [HttpGet("[action]")]
     public int GetCurrentQtyLeft(int id)
     {
         var product = GetProductById(id);

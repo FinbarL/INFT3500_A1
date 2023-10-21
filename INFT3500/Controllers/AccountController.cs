@@ -1,4 +1,3 @@
-using System.Net.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,6 +10,8 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+namespace INFT3500.Controllers;
+[Route("[controller]")]
 public class AccountController : Controller
 {
     private readonly StoreDbContext _context;
@@ -18,11 +19,12 @@ public class AccountController : Controller
     {
         _context = context;
     }
+    [HttpGet("[action]")]
     public IActionResult Login()
     {
         return View();
     }
-    [HttpPost]
+    [HttpPost("[action]")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
@@ -44,7 +46,7 @@ public class AccountController : Controller
         return View(model);
     }
 
-    [HttpGet]
+    [HttpGet("[action]")]
     public IActionResult RecoverAccount()
     {
         var recoverPasswordViewModel = new RecoverPasswordViewModel
@@ -55,7 +57,7 @@ public class AccountController : Controller
         return View(recoverPasswordViewModel);
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RecoverAccount(RecoverPasswordViewModel recoverPasswordViewModel)
     {
         var emailAddress = recoverPasswordViewModel.Email;
@@ -78,14 +80,14 @@ public class AccountController : Controller
         ModelState.AddModelError("Email", "User not found");
         return View(recoverPasswordViewModel);
     }
-
+    [HttpGet("[action]")]
     public IActionResult Register()
     {
         return View();
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("[action]")]
     public IActionResult UpdateUser()
     {
         string username = User.Identity.Name;
@@ -93,15 +95,14 @@ public class AccountController : Controller
         return View(updateUserViewModel);
     }
 
-    [HttpGet]
-    [Route("Account/UpdateUser/{userName}")]
+    [HttpGet("UpdateUserByUserName/{userName}")]
     public async Task<IActionResult> UpdateUser(string userName)
     {
         var updateUserViewModel = GetUpdateUserViewModel(userName);
         return View(updateUserViewModel);
     }
-
-    public UpdateUserViewModel GetUpdateUserViewModel(string userName)
+    [NonAction]
+    private UpdateUserViewModel GetUpdateUserViewModel(string userName)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
         var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
@@ -145,7 +146,7 @@ public class AccountController : Controller
         return updateUserViewModel;
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
     {
@@ -202,7 +203,7 @@ public class AccountController : Controller
         Console.WriteLine("invalid!!!");
         return View(model);
     }
-
+    [NonAction]
     public UserViewModel GetUserViewModel(string userName)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
@@ -251,7 +252,7 @@ public class AccountController : Controller
     }
 
     [Authorize(Policy = "RequireAdminRole")]
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RemoveUser(string userName)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
@@ -320,7 +321,7 @@ public class AccountController : Controller
     }
 
 
-    [HttpPost]
+    [HttpPost("[action]")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -389,8 +390,8 @@ public class AccountController : Controller
         }
 
         /*
-        ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
-        */
+    ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
+    */
         var errors = ModelState
             .Where(x => x.Value.Errors.Count > 0)
             .Select(x => new { x.Key, x.Value.Errors })
@@ -404,6 +405,7 @@ public class AccountController : Controller
     }
 
     [Authorize]
+    [HttpGet("[action]")]
     public IActionResult UserInfo()
     {
         string username = User.Identity.Name;
@@ -411,7 +413,7 @@ public class AccountController : Controller
         return View(user);
     }
 
-    [Route("Account/UserInfo/{userName}")]
+    [HttpGet("Account/UserInfo/{userName}")]
     public IActionResult UserInfo(string userName)
     {
         var user = GetUserViewModel(userName);
@@ -518,7 +520,7 @@ public class AccountController : Controller
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     }
 
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
 
 namespace INFT3500.Models;
@@ -29,9 +31,86 @@ public partial class StoreDbContext : DbContext
     public virtual DbSet<To> Tos { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-    
+
+    private async Task<User> CreateUser(string userName, string email, string password,
+        bool isAdmin = false, bool isStaff = false)
+    {
+        var salt = GenerateSalt();
+        var newUser = new User
+        {
+            UserName = userName,
+            Email = email,
+            Salt = salt,
+            HashPw = HashPassword(password, salt),
+            IsAdmin = isAdmin,
+            IsStaff = isStaff
+        };
+
+        Users.Add(newUser);
+        await SaveChangesAsync();
+        var userTo = await Tos.FirstOrDefaultAsync(t => t.UserName == userName);
+
+        if (userTo == null)
+        {
+            var newUserDetails = new To
+            {
+                UserName = newUser.UserName,
+                Email = email,
+                PhoneNumber = "1234567890",
+                StreetAddress = "3500 INFT St",
+                PostCode = 1337,
+                Suburb = "Suburb",
+                State = "State",
+                CardNumber = "1111222233334444",
+                CardOwner = "John Doe",
+                Expiry = "12/25",
+                Cvv = 123
+            };
+            Tos.Add(newUserDetails);
+        }
+        else
+        {
+            userTo.Email = email;
+            userTo.PhoneNumber = "1234567890";
+            userTo.StreetAddress = "3500 INFT St";
+            userTo.PostCode = 1234;
+            userTo.Suburb = "Suburb";
+            userTo.State = "State";
+            userTo.CardNumber = "1111222233334444";
+            userTo.CardOwner = "John Doe";
+            userTo.Expiry = "12/25";
+            userTo.Cvv = 123;
+        }
+        await SaveChangesAsync();
+
+        return newUser;
+    }
+    private string GenerateSalt()
+    {
+        //I stole this from https://stackoverflow.com/questions/45220359/encrypting-and-verifying-a-hashed-password-with-salt-using-pbkdf2-encryption
+
+        byte[] salt = new byte[128 / 8];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(salt);
+        }
+
+        return Convert.ToBase64String(salt);
+    }
+    private string HashPassword(string password, string salt)
+    {
+        var bytes = KeyDerivation.Pbkdf2(
+            password: password,
+            salt: Convert.FromBase64String(salt),
+            prf: KeyDerivationPrf.HMACSHA512,
+            iterationCount: 10000,
+            numBytesRequested: 256 / 8);
+
+        return Convert.ToBase64String(bytes);
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
 
         modelBuilder.Entity<Genre>(entity =>
         {
@@ -172,9 +251,31 @@ public partial class StoreDbContext : DbContext
                 .ValueGeneratedOnAdd()
                 .HasColumnName("UserID");
         });
-
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public async Task SeedDataAsync()
+    {
+        var adminExists = await Users.AnyAsync(u => u.UserName == "admin");
+        var staffExists = await Users.AnyAsync(u => u.UserName == "staff");
+        var regularExists = await Users.AnyAsync(u => u.UserName == "user");
+
+        if (!adminExists)
+        {
+            Console.WriteLine("CREATING ADMIN");
+            await CreateUser("admin", "admin@admin.com", "admin", true, false);
+        }
+
+        if (!staffExists)
+        {
+            await CreateUser("staff", "staff@staff.com", "staff", false, true);
+        }
+
+        if (!regularExists)
+        {
+            await CreateUser("user", "user@user.com", "user", false, false);
+        }
+    }
 }
