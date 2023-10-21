@@ -40,7 +40,7 @@ public class HomeController : Controller
     }
     [Authorize]
     [Route("")]
-    [HttpGet("[action]")]
+    [HttpGet]
     public IActionResult Index()
     {
         return RedirectToAction("Index", "Product");
