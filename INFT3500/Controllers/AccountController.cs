@@ -1,4 +1,3 @@
-using System.Net.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,21 +10,43 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+namespace INFT3500.Controllers;
+[Route("[controller]")]
 public class AccountController : Controller
 {
     private readonly StoreDbContext _context;
-
     public AccountController(StoreDbContext context)
     {
         _context = context;
     }
-
+    [HttpGet("[action]")]
     public IActionResult Login()
     {
         return View();
     }
+    [HttpPost("[action]")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
-    [HttpGet]
+            if (user != null && ValidatePassword(model.Password, user.Salt, user.HashPw))
+            {
+                await Authenticate(user);
+                return RedirectToAction("UserInfo", "Account");
+            }
+
+            ModelState.AddModelError("UserName", "Invalid username or password.");
+            return View(model);
+        }
+
+        ModelState.AddModelError("", "ModelState Invalid.");
+        return View(model);
+    }
+
+    [HttpGet("[action]")]
     public IActionResult RecoverAccount()
     {
         var recoverPasswordViewModel = new RecoverPasswordViewModel
@@ -36,7 +57,7 @@ public class AccountController : Controller
         return View(recoverPasswordViewModel);
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RecoverAccount(RecoverPasswordViewModel recoverPasswordViewModel)
     {
         var emailAddress = recoverPasswordViewModel.Email;
@@ -59,14 +80,14 @@ public class AccountController : Controller
         ModelState.AddModelError("Email", "User not found");
         return View(recoverPasswordViewModel);
     }
-
+    [HttpGet("[action]")]
     public IActionResult Register()
     {
         return View();
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("[action]")]
     public IActionResult UpdateUser()
     {
         string username = User.Identity.Name;
@@ -74,15 +95,14 @@ public class AccountController : Controller
         return View(updateUserViewModel);
     }
 
-    [HttpGet]
-    [Route("Account/UpdateUser/{userName}")]
+    [HttpGet("UpdateUserByUserName/{userName}")]
     public async Task<IActionResult> UpdateUser(string userName)
     {
         var updateUserViewModel = GetUpdateUserViewModel(userName);
         return View(updateUserViewModel);
     }
-
-    public UpdateUserViewModel GetUpdateUserViewModel(string userName)
+    [NonAction]
+    private UpdateUserViewModel GetUpdateUserViewModel(string userName)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
         var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
@@ -122,55 +142,11 @@ public class AccountController : Controller
             updateUserViewModel.CardExpiry = userTo.Expiry ?? "";
             updateUserViewModel.CardCVV = userTo.Cvv.ToString() ?? "";
         }
+
         return updateUserViewModel;
     }
 
-    public UserViewModel GetUserViewModel(string userName)
-    {
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
-        if (user == null && userTo == null)
-        {
-            return null;
-        }
-
-        var userViewModel = new UserViewModel
-        {
-            UserName = user.UserName,
-            EmailAddress = user.Email,
-            Name = user.Name,
-            IsAdmin = user.IsAdmin ?? false,
-            IsStaff = user.IsStaff ?? false,
-        };
-        if (userTo != null)
-        {
-            userViewModel.BillingEmail = userTo.Email ?? "";
-            userViewModel.PhoneNumber = userTo.PhoneNumber ?? "";
-            userViewModel.Address = userTo.StreetAddress ?? "";
-            userViewModel.PostCode = userTo.PostCode.ToString() ?? "";
-            userViewModel.Suburb = userTo.Suburb ?? "";
-            userViewModel.State = userTo.State ?? "";
-            userViewModel.CardNumber = userTo.CardNumber ?? "";
-            userViewModel.CardOwner = userTo.CardOwner ?? "";
-            userViewModel.CardExpiry = userTo.Expiry ?? "";
-            userViewModel.CardCVV = userTo.Cvv.ToString() ?? "";
-        }
-        else
-        {
-            userViewModel.BillingEmail = "";
-            userViewModel.PhoneNumber = "";
-            userViewModel.Address = "";
-            userViewModel.PostCode = "";
-            userViewModel.Suburb = "";
-            userViewModel.State = "";
-            userViewModel.CardNumber = "";
-            userViewModel.CardOwner = "";
-            userViewModel.CardExpiry = "";
-            userViewModel.CardCVV = "";
-        }
-        return userViewModel;
-    }
-    [HttpPost]
+    [HttpPost("[action]")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
     {
@@ -227,9 +203,56 @@ public class AccountController : Controller
         Console.WriteLine("invalid!!!");
         return View(model);
     }
+    [NonAction]
+    public UserViewModel GetUserViewModel(string userName)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        var userTo = _context.Tos.FirstOrDefault(u => u.UserName == userName);
+        if (user == null && userTo == null)
+        {
+            return null;
+        }
+
+        var userViewModel = new UserViewModel
+        {
+            UserName = user.UserName,
+            EmailAddress = user.Email,
+            Name = user.Name,
+            IsAdmin = user.IsAdmin ?? false,
+            IsStaff = user.IsStaff ?? false,
+        };
+        if (userTo != null)
+        {
+            userViewModel.BillingEmail = userTo.Email ?? "";
+            userViewModel.PhoneNumber = userTo.PhoneNumber ?? "";
+            userViewModel.Address = userTo.StreetAddress ?? "";
+            userViewModel.PostCode = userTo.PostCode.ToString() ?? "";
+            userViewModel.Suburb = userTo.Suburb ?? "";
+            userViewModel.State = userTo.State ?? "";
+            userViewModel.CardNumber = userTo.CardNumber ?? "";
+            userViewModel.CardOwner = userTo.CardOwner ?? "";
+            userViewModel.CardExpiry = userTo.Expiry ?? "";
+            userViewModel.CardCVV = userTo.Cvv.ToString() ?? "";
+        }
+        else
+        {
+            userViewModel.BillingEmail = "";
+            userViewModel.PhoneNumber = "";
+            userViewModel.Address = "";
+            userViewModel.PostCode = "";
+            userViewModel.Suburb = "";
+            userViewModel.State = "";
+            userViewModel.CardNumber = "";
+            userViewModel.CardOwner = "";
+            userViewModel.CardExpiry = "";
+            userViewModel.CardCVV = "";
+        }
+
+        return userViewModel;
+    }
 
     [Authorize(Policy = "RequireAdminRole")]
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RemoveUser(string userName)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
@@ -298,29 +321,7 @@ public class AccountController : Controller
     }
 
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
-
-            if (user != null && ValidatePassword(model.Password, user.Salt, user.HashPw))
-            {
-                await Authenticate(user);
-                return RedirectToAction("UserInfo", "Account");
-            }
-
-            ModelState.AddModelError("UserName", "Invalid username or password.");
-            return View(model);
-        }
-
-        ModelState.AddModelError("", "ModelState Invalid.");
-        return View(model);
-    }
-
-    [HttpPost]
+    [HttpPost("[action]")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -389,8 +390,8 @@ public class AccountController : Controller
         }
 
         /*
-        ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
-        */
+    ModelState.AddModelError("ConfirmPassword", "ModelState Invalid.");
+    */
         var errors = ModelState
             .Where(x => x.Value.Errors.Count > 0)
             .Select(x => new { x.Key, x.Value.Errors })
@@ -404,6 +405,7 @@ public class AccountController : Controller
     }
 
     [Authorize]
+    [HttpGet("[action]")]
     public IActionResult UserInfo()
     {
         string username = User.Identity.Name;
@@ -411,7 +413,7 @@ public class AccountController : Controller
         return View(user);
     }
 
-    [Route("Account/UserInfo/{userName}")]
+    [HttpGet("Account/UserInfo/{userName}")]
     public IActionResult UserInfo(string userName)
     {
         var user = GetUserViewModel(userName);
@@ -462,11 +464,7 @@ public class AccountController : Controller
 
     private bool ValidatePassword(string password, string salt, string hashedPassword)
     {
-        Console.WriteLine("pass: " + password);
-        Console.WriteLine("salt: " + salt.ToString());
-        Console.WriteLine("providedHash:  " + hashedPassword.ToString());
         string hashedPw = HashPassword(password, salt);
-        Console.WriteLine("generatedHash: " + hashedPw.ToString());
         return hashedPw.Equals(hashedPassword);
     }
 
@@ -522,7 +520,7 @@ public class AccountController : Controller
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     }
 
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace INFT3500.Models;
 
-public partial class User
+public class User
 {
     public int UserId { get; set; }
     [Required]

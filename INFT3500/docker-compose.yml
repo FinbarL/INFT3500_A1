@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  db:
+    build: ./Db
+    restart: always
+    ports:
+      - "1433:1433"

@@ -122,10 +122,14 @@ C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.Id
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.OpenApi.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.SqlServer.Server.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Mono.TextTemplating.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\System.CodeDom.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\System.Configuration.ConfigurationManager.dll
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\bin\Debug\net7.0\System.Drawing.Common.dll
@@ -155,6 +159,7 @@ C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.Gen
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.AssemblyInfoInputs.cache
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.AssemblyInfo.cs
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.csproj.CoreCompileInputs.cache
+C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.RazorAssemblyInfo.cache
 C:\Users\Finbar\RiderProjects\INFT3500_A1\INFT3500\obj\Debug\net7.0\INFT3500.RazorAssemblyInfo.cs

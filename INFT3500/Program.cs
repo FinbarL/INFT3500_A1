@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -15,12 +19,9 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdminRole",
-        policy => policy.RequireRole("Admin"));
-    options.AddPolicy("RequireCustomerRole",
-        policy => policy.RequireRole("Customer"));
-    options.AddPolicy("RequireStaffRole",
-        policy => policy.RequireRole("Staff"));
+    options.AddPolicy("RequireAdminRole",policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireCustomerRole",policy => policy.RequireRole("Customer"));
+    options.AddPolicy("RequireStaffRole",policy => policy.RequireRole("Staff"));
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging(logging =>
@@ -31,20 +32,29 @@ builder.Services.AddLogging(logging =>
 
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
-    options.UseSqlServer(
-        builder.Configuration["ConnectionStrings:StoreDbContextConnection"]);
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:StoreDbContextConnection"]);
 });
 builder.Services.AddSession();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<StoreDbContext>();
+    dbContext.Database.Migrate();
+
+    dbContext.SeedDataAsync().Wait();
+}
+
+
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 } else
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
 
@@ -58,4 +68,5 @@ app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapFallbackToController("Index", "Home");
 app.Run();

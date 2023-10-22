@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace INFT3500.Controllers;
-
+[Route("[controller]")]
 public class CartController : Controller
 {
     private readonly StoreDbContext _dbContext;
@@ -22,6 +22,7 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpGet("[action]")]
     public async Task<IActionResult> Index()
     {
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
@@ -29,6 +30,7 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpPost("[action]")]
     public async Task<IActionResult> AddToCart(int id)
     {
         var product = await _productController.GetProductViewModelById(id);
@@ -64,6 +66,7 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpPost("[action]")]
     public async Task<IActionResult> RemoveFromCart(int id)
     {
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
@@ -78,6 +81,7 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpPost("[action]")]
     public async Task<IActionResult> DecrementQty(int id, int amountRemoved = 1)
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
@@ -109,6 +113,7 @@ public class CartController : Controller
     }
 
     [Authorize]
+    [HttpPost("[action]")]
     public async Task<IActionResult> UpdateCart(CartViewModel cartItem)
     {
         Console.WriteLine("UPDATE CART");
@@ -142,7 +147,7 @@ public class CartController : Controller
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<IActionResult> Checkout()
     {
         Console.WriteLine("CALLED [GET] CHECKOUT!!!");
@@ -199,7 +204,7 @@ public class CartController : Controller
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<IActionResult> Checkout(CartPageViewModel cartPageViewModel)
     {
         if (ModelState.IsValid)
