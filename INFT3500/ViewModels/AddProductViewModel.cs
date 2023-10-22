@@ -42,4 +42,6 @@ public class AddProductViewModel
         new SelectListItem { Value = "4", Text = "Prime Video"  },
     };
 
+    public List<SelectListItem> SubGenreList { get; set;  } = new List<SelectListItem>();
+
 }

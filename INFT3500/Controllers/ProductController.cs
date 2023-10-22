@@ -2,6 +2,7 @@ using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -88,10 +89,10 @@ public class ProductController : Controller
     [Authorize(Policy = "RequireAdminRole")]
     public IActionResult AddItem()
     {
-        Console.WriteLine("Called");
         var model = new AddProductViewModel
         {
-            Genre = 1
+            Genre = 1,
+            SubGenreList = GetSubGenreSelectList()
         };
         return View(model);
     }
@@ -166,6 +167,7 @@ public class ProductController : Controller
             Published = productViewModel.Published,
             Genre = productViewModel.Genre,
             SubGenre = productViewModel.SubGenre,
+            SubGenreList = GetSubGenreSelectList(),
             Id = productViewModel.Id,
             RealQuantity = GetCurrentQtyLeft(productViewModel.Id),
             StocktakeSourceId = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId ?? 0,
@@ -297,6 +299,20 @@ public class ProductController : Controller
             .Where(p => p.Id == id)
             .Select(p => (p)).First();
         return product;
+    }
+
+    public List<string?> GetSubGenreList()
+    {
+        var subGenres = _dbContext.Products.Select(p => p.SubGenre).Distinct().ToList();
+        return subGenres;
+    }
+    public List<SelectListItem> GetSubGenreSelectList()
+    {
+        return GetSubGenreList().Select(sg => new SelectListItem
+        {
+            Value = sg,
+            Text = sg
+        }).ToList();
     }
 
     public int GetCurrentQtyLeft(int id)

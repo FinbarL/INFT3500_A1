@@ -25,11 +25,24 @@ Questions:
 2. What does the 'update order details' look like? (UML Diagram)
 3. I currently don't allow the user to update the genre, is this okay? 
 4. Whats the actual MVP? Is it just the business scenarios?
-5. Do we need to actually have email integration? 
+~~5. Do we need to actually have email integration?~~
+5. I have implemented a automatic password reset, is this enough? 
+6. Do we need support adding multiple sources? 
 
+### **TODO:**
 
-TODO:
-- Admins can create new users, include setting isAdmin and isStaff
-- Email verification and account recovery (forgot password)
-- User Order History
-- Show all items in the admin product view 
+## Implementation: 
+- Implement modals/some kind of popup for confirmations/errors etc. 
+- Fix changing Genre/Source
+- Add Validation to all forms
+  - Address line contains letters and numbers
+  - Emails 
+  - Post code contains only numbers
+  - State selected from dropdown list
+- Create a conistent color theme for store (use bootstrap color variables? i.e. primary/secondary warning etc.)
+- Ensure page is responsive to different screen sizes
+- Implement tooltips 
+
+## Documentation:
+- UI Wireframes
+- ER Diagram 
