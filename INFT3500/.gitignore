@@ -269,3 +269,40 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/
 
+/obj/Debug/
+/obj/Debug/net7.0/
+/obj/
+/obj/Debug/net7.0/ref/
+/obj/Debug/net7.0/refint/
+/obj/Debug/net7.0/scopedcss/
+/obj/Debug/net7.0/staticwebassets/
+/obj/Debug/net7.0/.NETCoreApp,Version=v7.0.AssemblyAttributes.cs
+/obj/Debug/net7.0/apphost.exe
+/obj/Debug/net7.0/INFT3500.dll
+/obj/Debug/net7.0/INFT3500.pdb
+/obj/Debug/net7.0/INFT3500.AssemblyInfo.cs
+/obj/Debug/net7.0/INFT3500.AssemblyInfoInputs.cache
+/obj/Debug/net7.0/INFT3500.assets.cache
+/obj/Debug/net7.0/INFT3500.csproj.CopyComplete
+/obj/Debug/net7.0/INFT3500.csproj.AssemblyReference.cache
+/obj/Debug/net7.0/INFT3500.csproj.CoreCompileInputs.cache
+/obj/Debug/net7.0/INFT3500.csproj.FileListAbsolute.txt
+/obj/Debug/net7.0/INFT3500.GeneratedMSBuildEditorConfig.editorconfig
+/obj/Debug/net7.0/INFT3500.genruntimeconfig.cache
+/obj/Debug/net7.0/INFT3500.GlobalUsings.g.cs
+/obj/Debug/net7.0/INFT3500.MvcApplicationPartsAssemblyInfo.cache
+/obj/Debug/net7.0/INFT3500.MvcApplicationPartsAssemblyInfo.cs
+/obj/Debug/net7.0/INFT3500.RazorAssemblyInfo.cache
+/obj/Debug/net7.0/INFT3500.RazorAssemblyInfo.cs
+/obj/Debug/net7.0/staticwebassets.build.json
+/obj/Debug/net7.0/staticwebassets.development.json
+/obj/Debug/net7.0/staticwebassets.pack.json
+/obj/INFT3500.csproj.EntityFrameworkCore.targets
+/obj/INFT3500.csproj.nuget.dgspec.json
+/obj/INFT3500.csproj.nuget.g.props
+/obj/INFT3500.csproj.nuget.g.targets
+/obj/project.assets.json
+/obj/project.nuget.cache
+/obj/project.packagespec.json
+/obj/rider.project.model.nuget.info
+/obj/rider.project.restore.info
