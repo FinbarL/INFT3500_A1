@@ -61,7 +61,7 @@ public partial class StoreDbContext : DbContext
                 PostCode = 1337,
                 Suburb = "Suburb",
                 State = "State",
-                CardNumber = "1111222233334444",
+                CardNumber = "374245455400126",
                 CardOwner = "John Doe",
                 Expiry = "12/25",
                 Cvv = 123
@@ -76,7 +76,7 @@ public partial class StoreDbContext : DbContext
             userTo.PostCode = 1234;
             userTo.Suburb = "Suburb";
             userTo.State = "State";
-            userTo.CardNumber = "1111222233334444";
+            userTo.CardNumber = "374245455400126";
             userTo.CardOwner = "John Doe";
             userTo.Expiry = "12/25";
             userTo.Cvv = 123;
