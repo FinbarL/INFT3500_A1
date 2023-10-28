@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 namespace INFT3500.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+
 [Route("[controller]")]
 public class ProductController : Controller
 {
@@ -32,6 +33,7 @@ public class ProductController : Controller
         var productViewModels = await GetProductList(searchString);
         return View(productViewModels);
     }
+
     [HttpGet("[action]")]
     public async Task<IActionResult> Details(int id)
     {
@@ -48,19 +50,24 @@ public class ProductController : Controller
             productList = await _dbContext.Products
                 .Include(p => p.GenreNavigation)
                 .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
-                .Where(p => p.Author != null && p.Name != null &&
+                .Where(p => p.GenreNavigation != null && p.GenreNavigation.Name != null && p.Author != null &&
+                            p.Name != null && p.Genre != null &&
                             (searchString == null || searchString == "" ||
-                             p.Name.Contains(searchString) || p.Author.Contains(searchString))).ToListAsync();
+                             p.Name.Contains(searchString) || p.GenreNavigation.Name.Contains(searchString) ||
+                             p.Author.Contains(searchString))).ToListAsync();
         }
         else
         {
             productList = await _dbContext.Products
                 .Include(p => p.GenreNavigation)
                 .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
-                .Where(p => p.Author != null && p.Name != null &&
+                .Where(p => p.GenreNavigation != null && p.GenreNavigation.Name != null && p.GenreNavigation != null &&
+                            p.Author != null && p.Name != null && p.Genre != null &&
                             (searchString == null || searchString == "" ||
-                             p.Name.Contains(searchString) || p.Author.Contains(searchString)) &&
-                            p.Stocktakes.Count(s => s.Source.ExternalLink != null) > 0).ToListAsync();
+                             p.Name.Contains(searchString) || p.GenreNavigation.Name.Contains(searchString) ||
+                             p.Author.Contains(searchString)) &&
+                            p.Stocktakes.Count(s => s.Source != null && s.Source.ExternalLink != null) > 0)
+                .ToListAsync();
         }
 
         var productStocktakeList = new List<KeyValuePair<int, int>>();
@@ -134,6 +141,7 @@ public class ProductController : Controller
 
         return View(model);
     }
+
     [HttpGet("[action]")]
     public IActionResult EditItem(int id)
     {
@@ -157,9 +165,12 @@ public class ProductController : Controller
             SubGenre = productViewModel.SubGenre,
             Id = productViewModel.Id,
             RealQuantity = GetCurrentQtyLeft(productViewModel.Id),
-            StocktakeSourceId = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId ?? 0,
-            StocktakeQuantity = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Quantity ?? 0,
-            StocktakePrice = productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Price ?? 0,
+            StocktakeSourceId =
+                productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId ?? 0,
+            StocktakeQuantity =
+                productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Quantity ?? 0,
+            StocktakePrice =
+                productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Price ?? 0,
         };
         return View(addProductViewModel);
     }
@@ -169,17 +180,19 @@ public class ProductController : Controller
     public async Task<IActionResult> EditItem(AddProductViewModel model)
     {
         IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
-        foreach(var error in allErrors)
+        foreach (var error in allErrors)
         {
             Console.WriteLine("ERROR:" + error);
         }
+
         Console.WriteLine("EditItem [GET] Called");
         if (ModelState.IsValid)
         {
             Console.WriteLine("MODELID=" + model.Id);
             var existingItem = _dbContext.Products.FirstOrDefault(p => p.Id == model.Id);
             var existingStocktake =
-                _dbContext.Stocktakes.FirstOrDefault(s => s.Source != null && s.ProductId == model.Id && s.Source.ExternalLink != null);
+                _dbContext.Stocktakes.FirstOrDefault(s =>
+                    s.Source != null && s.ProductId == model.Id && s.Source.ExternalLink != null);
             Console.WriteLine("NEWSOURCE=" + model.StocktakeSourceId);
             Console.WriteLine("SOURCEID =" + existingStocktake?.SourceId);
             if (existingItem != null)
@@ -292,6 +305,7 @@ public class ProductController : Controller
             .Select(p => (p)).First();
         return product;
     }
+
     [HttpGet("[action]")]
     public int GetCurrentQtyLeft(int id)
     {

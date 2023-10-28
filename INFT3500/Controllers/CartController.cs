@@ -4,7 +4,6 @@ using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace INFT3500.Controllers;
 [Route("[controller]")]
@@ -151,57 +150,60 @@ public class CartController : Controller
     [HttpGet("[action]")]
     public async Task<IActionResult> Checkout()
     {
-        Console.WriteLine("CALLED [GET] CHECKOUT!!!");
-        var userName = User.Identity.Name;
-        var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
-        if (cart == null)
-        {
-            return RedirectToAction("Index", "Cart");
-        }
+            Console.WriteLine("CALLED [GET] CHECKOUT!!!");
+            var userName = User.Identity.Name;
+            var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+            if (cart == null)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
 
-        var billingInfo = _accountController.GetUserViewModel(userName);
-        List<CartViewModel> lowStockItems = new List<CartViewModel>();
-        foreach (var cartItem in cart)
-        {
-            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItem.Product.ProductId);
-            var stocktake = await _dbContext.Stocktakes.FirstOrDefaultAsync(s => s.ProductId == product.Id);
-            if (product == null || stocktake == null)
+            var billingInfo = _accountController.GetUserViewModel(userName);
+            List<CartViewModel> lowStockItems = new List<CartViewModel>();
+            foreach (var cartItem in cart)
             {
-                Console.WriteLine("Product or stocktake not found");
-                ViewBag.ErrorMessage = "Product or stocktake not found" + cartItem.Product.ProductId;
-                return View();
-            }
-            var qtyLeft = _productController.GetCurrentQtyLeft(cartItem.Product.ProductId);
-            var qtyToOrder = cartItem.Quantity;
-            Console.WriteLine("QTYLEFT:" + qtyLeft);
-            if (qtyLeft < qtyToOrder)
-            {
-                lowStockItems.Add(cartItem);
-            }
-        }
-        //check if any items are low on stock
-        if (lowStockItems.Count > 0)
-        {
-            var errorMessage = "The following items were out of stock: ";
-            foreach (var lowStockItem in lowStockItems)
-            {
-                var currentQtyLeft = _productController.GetCurrentQtyLeft(lowStockItem.Product.ProductId);
-                var qtySelected = lowStockItem.Quantity;
-                errorMessage += lowStockItem.Product.Name + " (Qty Left: " +currentQtyLeft + "), ";
-                await DecrementQty(lowStockItem.Product.ProductId, qtySelected - currentQtyLeft);
-                cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
-            }
-            errorMessage += "Your cart has been automatically adjusted";
-            ViewBag.ErrorMessage = errorMessage;
-            Console.WriteLine("No stock left");
-        }
+                var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItem.Product.ProductId);
+                var stocktake = await _dbContext.Stocktakes.FirstOrDefaultAsync(s => s.ProductId == product.Id);
+                if (product == null || stocktake == null)
+                {
+                    Console.WriteLine("Product or stocktake not found");
+                    ViewBag.ErrorMessage = "Product or stocktake not found" + cartItem.Product.ProductId;
+                    return View();
+                }
 
-        var cartPageViewModel = new CartPageViewModel
-        {
-            Products = cart,
-            User = billingInfo,
-        };
-        return View(cartPageViewModel);
+                var qtyLeft = _productController.GetCurrentQtyLeft(cartItem.Product.ProductId);
+                var qtyToOrder = cartItem.Quantity;
+                Console.WriteLine("QTYLEFT:" + qtyLeft);
+                if (qtyLeft < qtyToOrder)
+                {
+                    lowStockItems.Add(cartItem);
+                }
+            }
+
+            //check if any items are low on stock
+            if (lowStockItems.Count > 0)
+            {
+                var errorMessage = "The following items were out of stock: ";
+                foreach (var lowStockItem in lowStockItems)
+                {
+                    var currentQtyLeft = _productController.GetCurrentQtyLeft(lowStockItem.Product.ProductId);
+                    var qtySelected = lowStockItem.Quantity;
+                    errorMessage += lowStockItem.Product.Name + " (Qty Left: " + currentQtyLeft + "), ";
+                    await DecrementQty(lowStockItem.Product.ProductId, qtySelected - currentQtyLeft);
+                    cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+                }
+
+                errorMessage += "Your cart has been automatically adjusted";
+                ViewBag.ErrorMessage = errorMessage;
+                Console.WriteLine("No stock left");
+            }
+
+            var cartPageViewModel = new CartPageViewModel
+            {
+                Products = cart,
+                User = billingInfo,
+            };
+            return View(cartPageViewModel);
     }
 
     [Authorize]
@@ -286,10 +288,13 @@ public class CartController : Controller
             await _dbContext.SaveChangesAsync();
             ClearCart();
             return RedirectToAction("Index", "Cart");
+        } else
+        {
+            var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
+            cartPageViewModel.Products = cart;
         }
 
-        Console.WriteLine("MODELSTATE INVALID!!!");
-        return RedirectToAction("Index", "Cart");
+        return View(cartPageViewModel);
     }
 
     private CartViewModel FindCartItemById(int id)
