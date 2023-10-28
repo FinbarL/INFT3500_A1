@@ -57,7 +57,12 @@ if (!app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
-
+app.Use(async (context, next) =>
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation($"{context.Request.Method} {context.Request.Path} was called.");
+    await next.Invoke();
+});
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

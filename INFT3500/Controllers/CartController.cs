@@ -31,9 +31,10 @@ public class CartController : Controller
 
     [Authorize]
     [HttpPost("[action]")]
-    public async Task<IActionResult> AddToCart(int id)
+    public async Task<IActionResult> AddToCart(int productId)
     {
-        var product = await _productController.GetProductViewModelById(id);
+        Console.WriteLine("CALLED ADD TO CART");
+        var product = await _productController.GetProductViewModelById(productId);
         if (product == null)
         {
             Console.WriteLine("Product not found");
@@ -48,7 +49,7 @@ public class CartController : Controller
         }
         else
         {
-            var existingItem = FindCartItemById(id);
+            var existingItem = FindCartItemById(productId);
             if (existingItem == null)
             {
                 var productToAdd = new CartViewModel { Product = product, Quantity = 1 };
@@ -56,7 +57,7 @@ public class CartController : Controller
             }
             else
             {
-                cart.Find(p => p.Product.ProductId == id).Quantity++;
+                cart.Find(p => p.Product.ProductId == productId).Quantity++;
             }
 
             SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
@@ -67,7 +68,7 @@ public class CartController : Controller
 
     [Authorize]
     [HttpPost("[action]")]
-    public async Task<IActionResult> RemoveFromCart(int id)
+    public async Task<IActionResult> RemoveFromCart(int productId)
     {
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
         if (cart == null)
@@ -75,35 +76,35 @@ public class CartController : Controller
             return RedirectToAction("Index", "Cart");
         }
 
-        cart.RemoveAll(p => p.Product.ProductId == id);
+        cart.RemoveAll(p => p.Product.ProductId == productId);
         SessionHelper.AddObjectToSession(HttpContext.Session, "cart", cart);
         return RedirectToAction("Index", "Cart");
     }
 
     [Authorize]
     [HttpPost("[action]")]
-    public async Task<IActionResult> DecrementQty(int id, int amountRemoved = 1)
+    public async Task<IActionResult> DecrementQty(int productId, int amountRemoved = 1)
     {
-        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
         if (product == null)
         {
             Console.WriteLine("Product not found");
-            return null;
+            return RedirectToAction("Index", "Cart");
         }
 
         var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
 
-        var existingItem = FindCartItemById(id);
+        var existingItem = FindCartItemById(productId);
         if (existingItem != null)
         {
-            var cartItem = cart.Find(p => p.Product.ProductId == id);
+            var cartItem = cart.Find(p => p.Product.ProductId == productId);
             if (cartItem.Quantity > amountRemoved)
             {
                 cartItem.Quantity -= amountRemoved;
             }
             else
             {
-                cart.RemoveAll(p => p.Product.ProductId == id);
+                cart.RemoveAll(p => p.Product.ProductId == productId);
             }
         }
 
