@@ -150,6 +150,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
     {
+        Console.WriteLine(model.Address);
         if (ModelState.IsValid)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);

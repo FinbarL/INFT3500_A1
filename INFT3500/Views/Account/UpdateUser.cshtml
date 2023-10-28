@@ -8,7 +8,7 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-controller="Account" asp-action="UpdateUser" method="post">
-           @Html.AntiForgeryToken()
+            @Html.AntiForgeryToken()
             @*Make text box for username but always disabled and sends data when submit*@
             <div class="form-group">
                 <label asp-for="UserName">Username</label>
@@ -51,67 +51,67 @@
                     <span asp-validation-for="IsStaff" class="text-danger"></span>
                 </div>
             }
-                <h2>Billing Information</h2>
-                <div class="form-group">
-                    <label asp-for="BillingEmail">Billing Email: </label>
-                    <input asp-for="BillingEmail" class="form-control"/>
-                    <span asp-validation-for="BillingEmail" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="PhoneNumber">Phone Number: </label>
-                    <input asp-for="PhoneNumber" class="form-control"/>
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Address">Address: </label>
-                    <input asp-for="Address" class="form-control"/>
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="PostCode">Post Code: </label>
-                    <input asp-for="PostCode" class="form-control"/>
-                    <span asp-validation-for="PostCode" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Suburb">Suburb: </label>
-                    <input asp-for="Suburb" class="form-control"/>
-                    <span asp-validation-for="Suburb" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="State">State: </label>
-                    <input asp-for="State" class="form-control"/>
-                    <span asp-validation-for="State" class="text-danger"></span>
-                </div>
-                <h2>Card details</h2>
-                <div class="form-group">
-                    <label asp-for="CardNumber">Card Number: </label>
-                    <input asp-for="CardNumber" class="form-control"/>
-                    <span asp-validation-for="CardNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CardOwner">Card Owner: </label>
-                    <input asp-for="CardOwner" class="form-control"/>
-                    <span asp-validation-for="CardOwner" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CardCVV">Card CCV: </label>
-                    <input asp-for="CardCVV" class="form-control"/>
-                    <span asp-validation-for="CardCVV" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CardExpiry">Card Expiry: </label>
-                    <input asp-for="CardExpiry" class="form-control"/>
-                    <span asp-validation-for="CardExpiry" class="text-danger"></span>
-                </div>
+            <h2>Billing Information</h2>
+            <div class="form-group">
+                <label asp-for="BillingEmail">Billing Email: </label>
+                <input asp-for="BillingEmail" class="form-control"/>
+                <span asp-validation-for="BillingEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Phone Number: </label>
+                <input asp-for="PhoneNumber" class="form-control"/>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address">Address: </label>
+                <input asp-for="Address" class="form-control"/>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostCode">Post Code: </label>
+                <input asp-for="PostCode" class="form-control"/>
+                <span asp-validation-for="PostCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Suburb">Suburb: </label>
+                <input asp-for="Suburb" class="form-control"/>
+                <span asp-validation-for="Suburb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State">State: </label>
+                <select asp-for="State" asp-items="Model.States"></select>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <h2>Card details</h2>
+            <div class="form-group">
+                <label asp-for="CardNumber">Card Number: </label>
+                <input asp-for="CardNumber" class="form-control"/>
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardOwner">Card Owner: </label>
+                <input asp-for="CardOwner" class="form-control"/>
+                <span asp-validation-for="CardOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardCVV">Card CCV: </label>
+                <input asp-for="CardCVV" class="form-control"/>
+                <span asp-validation-for="CardCVV" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardExpiry">Card Expiry: </label>
+                <input asp-for="CardExpiry" class="form-control"/>
+                <span asp-validation-for="CardExpiry" class="text-danger"></span>
+            </div>
             <button type="submit" class="btn btn-primary mt-3">Update Details</button>
         </form>
         <form asp-controller="Account" asp-action="UpdatePassword" method="Get">
-                                            <a asp-controller="Account"
-                                               asp-action="UpdatePassword"
-                                               asp-route-id="@Model.UserName"
-                                               class="btn btn-warning mt-3">
-                                                Update Password
-                                            </a>
+            <a asp-controller="Account"
+               asp-action="UpdatePassword"
+               asp-route-id="@Model.UserName"
+               class="btn btn-warning mt-3">
+                Update Password
+            </a>
         </form>
     </div>
 </div>
