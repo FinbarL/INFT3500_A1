@@ -2,6 +2,7 @@ using INFT3500.Models;
 using INFT3500.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -101,7 +102,9 @@ public class ProductController : Controller
     [HttpPost("[action]")]
     public IActionResult AddItem(AddProductViewModel model)
     {
-        Console.WriteLine(model.Published);
+        IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        Console.WriteLine(allErrors);
+
         Console.WriteLine(new DateTime());
         if (ModelState.IsValid)
         {
@@ -134,6 +137,8 @@ public class ProductController : Controller
     [HttpGet("[action]")]
     public IActionResult EditItem(int id)
     {
+        IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        Console.WriteLine(allErrors);
         Console.WriteLine("EditItem [GET] Called");
         var productViewModel = GetProductById(id);
         if (productViewModel == null)
@@ -141,23 +146,6 @@ public class ProductController : Controller
             Console.WriteLine("Product not found");
             return RedirectToAction("Index", "Product");
         }
-
-        //logg all values of productViewModel
-        Console.WriteLine("ID:" + productViewModel.Id);
-        Console.WriteLine("Name:" + productViewModel.Name);
-        Console.WriteLine("Author:" + productViewModel.Author);
-        Console.WriteLine("Description:" + productViewModel.Description);
-        Console.WriteLine("Published:" + productViewModel.Published);
-        Console.WriteLine("Genre:" + productViewModel.Genre);
-        Console.WriteLine("SubGenre:" + productViewModel.SubGenre);
-        Console.WriteLine("LastUpdatedBy:" + productViewModel.LastUpdatedBy);
-        Console.WriteLine("LastUpdated:" + productViewModel.LastUpdated);
-        Console.WriteLine("StocktakeSourceId:" +
-                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.SourceId);
-        Console.WriteLine("StocktakeQuantity:" +
-                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Quantity);
-        Console.WriteLine("StocktakePrice:" +
-                          productViewModel.Stocktakes.FirstOrDefault(s => s.Source?.ExternalLink != null)?.Price);
 
         var addProductViewModel = new AddProductViewModel
         {
@@ -180,8 +168,12 @@ public class ProductController : Controller
     [HttpPost("[action]")]
     public async Task<IActionResult> EditItem(AddProductViewModel model)
     {
-        Console.WriteLine(model.Published);
-        Console.WriteLine(new DateTime());
+        IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        foreach(var error in allErrors)
+        {
+            Console.WriteLine("ERROR:" + error);
+        }
+        Console.WriteLine("EditItem [GET] Called");
         if (ModelState.IsValid)
         {
             Console.WriteLine("MODELID=" + model.Id);

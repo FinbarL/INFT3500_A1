@@ -1,7 +1,7 @@
 @model AddProductViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Edit Item";
     Layout = "_Layout";
 }
 
@@ -68,6 +68,7 @@
                 <input asp-for="Published" class="form-control" type="date"/>
                 <span asp-validation-for="Published" class="text-danger"></span>
             </div>
+            <p>Price: @Model.StocktakeSourceId</p>
             <h2>Stocktake Values</h2>
             <div class="form-group mt-2">
                 <label asp-for="StocktakeSourceId">Source: </label>
@@ -87,7 +88,8 @@
                 <input asp-for="StocktakePrice" class="form-control"/>
                 <span asp-validation-for="StocktakePrice" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="StocktakeSourceId" />
+            <input type="hidden" asp-for="StocktakeSourceId"/>
+            <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn btn-primary mt-3">Edit Product</button>
         </form>
     </div>

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using INFT3500.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -9,22 +10,22 @@ public class AddProductViewModel
 {
     public int Id { get; set; }
 
+    [Required]
     public string? Name { get; set; }
-
+    [Required]
     public string? Author { get; set; }
-
     public string? Description { get; set; }
-
+    [Required]
     public int? Genre { get; set; }
-
+    [Required]
     public string? SubGenre { get; set; }
-
+    [Required]
     public DateTime? Published { get; set; }
-
+    [Required]
     public int? StocktakeSourceId { get; set; }
-
+    [Required]
     public int? StocktakeQuantity { get; set; }
-
+    [Required]
     public double? StocktakePrice { get; set; }
 
     [DefaultValue(0)]
