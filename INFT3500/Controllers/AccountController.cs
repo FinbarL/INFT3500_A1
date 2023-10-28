@@ -94,8 +94,8 @@ public class AccountController : Controller
         var updateUserViewModel = GetUpdateUserViewModel(username);
         return View(updateUserViewModel);
     }
-
-    [HttpGet("UpdateUserByUserName/{userName}")]
+    [Authorize]
+    [HttpGet("[action]/{userName}")]
     public async Task<IActionResult> UpdateUser(string userName)
     {
         var updateUserViewModel = GetUpdateUserViewModel(userName);
@@ -146,7 +146,7 @@ public class AccountController : Controller
         return updateUserViewModel;
     }
 
-    [HttpPost("[action]")]
+    [HttpPost("[action]/{userName?}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUser(UpdateUserViewModel model)
     {

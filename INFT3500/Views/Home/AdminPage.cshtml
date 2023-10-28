@@ -61,7 +61,7 @@
                             <div class="p-2">
                                 <a asp-controller="Account"
                                    asp-action="UserInfo"
-                                   asp-route-id="@user.UserName"
+                                   asp-route-userName="@user.UserName"
                                    class="btn btn-success">
                                     User Info
                                 </a>
@@ -69,14 +69,14 @@
                             <div class="p-2">
                                 <a asp-controller="Account"
                                    asp-action="UpdateUser"
-                                   asp-route-id="@user.UserName"
+                                   asp-route-userName="@user.UserName"
                                    class="btn btn-warning">
                                     Update User
                                 </a>
                             </div>
                             <div class="p-2">
                                 <form asp-controller="Account" asp-action="RemoveUser" method="post">
-                                    <input type="hidden" name="userName" value="@user.UserName" />
+                                    <input type="hidden" name="userName" value="@user.UserName"/>
                                     <button type="submit" class="btn btn-danger">Remove User</button>
                                 </form>
                             </div>
