@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace INFT3500.ViewModels;
 
+[CreditCardDetailsValidation]
 public class UpdateUserViewModel
 {
     public string UserName { get; set; }
@@ -29,20 +30,20 @@ public class UpdateUserViewModel
 
     [Required] public string Suburb { get; set; }
     [Required] public string State { get; set; }
-    [Required]
+
     [CreditCard(ErrorMessage = "Card Number is not valid.")]
-    public string CardNumber { get; set; }
+    public string? CardNumber { get; set; }
 
-    [Required] public string CardOwner { get; set; }
+    public string? CardOwner { get; set; }
 
-    [Required]
+
     [RegularExpression(@"^(0[1-9]|1[0-2])\/?([0-9]{2})$", ErrorMessage = "Card Expiry must be in MM/YY format.")]
     [ValidCardExpiry(ErrorMessage = "Card has expired.")]
-    public string CardExpiry { get; set; }
+    public string? CardExpiry { get; set; }
 
-    [Required]
     [RegularExpression(@"^\d+$", ErrorMessage = "Card CVV should contain numbers only.")]
-    public string CardCVV { get; set; }
+    [MinLength(3)]
+    public string? CardCVV { get; set; }
 
     public List<SelectListItem> States => new List<SelectListItem>
     {
@@ -56,29 +57,61 @@ public class UpdateUserViewModel
         new SelectListItem {Value= "Western Australia", Text="WA"},
     };
 }
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public class CreditCardDetailsValidation : ValidationAttribute
+{
+    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    {
+        var updateUserViewModel = validationContext.ObjectInstance as UpdateUserViewModel;
+        if (updateUserViewModel == null)
+        {
+            return new ValidationResult("Invalid context.");
+        }
+
+        bool cardNumberEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardNumber);
+        bool cardOwnerEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardOwner);
+        bool cardExpiryEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardExpiry);
+
+        // If one is filled, all should be filled
+        if (cardNumberEmpty != cardOwnerEmpty || cardNumberEmpty != cardExpiryEmpty)
+        {
+            return new ValidationResult("Card details should be either all filled or all left empty.");
+        }
+
+        return ValidationResult.Success;
+    }
+}
 public class ValidCardExpiry : ValidationAttribute
 {
-    public override bool IsValid(object value)
+    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        var expiry = value as string;
-        if (expiry == null)
+        var updateUserViewModel = validationContext.ObjectInstance as UpdateUserViewModel;
+        if (updateUserViewModel == null)
         {
-            return false;
+            return new ValidationResult("Invalid context.");
         }
 
-        var dateParts = expiry.Split('/');
-        if (dateParts.Length != 2)
+        // If CardExpiry is provided, validate it
+        if (!string.IsNullOrWhiteSpace(updateUserViewModel.CardExpiry))
         {
-            return false;
-        }
-        var currentDate = DateTime.Now;
-        var currentMonth = currentDate.Month;
-        var currentYear = currentDate.Year % 100;
+            var expiry = value as string;
 
-        if (int.Parse(dateParts[1]) < currentYear || (int.Parse(dateParts[1]) == currentYear && int.Parse(dateParts[0]) < currentMonth))
-        {
-            return false;
+            var dateParts = expiry.Split('/');
+            if (dateParts.Length != 2)
+            {
+                return new ValidationResult("Card Expiry must be in MM/YY format.");
+            }
+
+            var currentDate = DateTime.Now;
+            var currentMonth = currentDate.Month;
+            var currentYear = currentDate.Year % 100;
+
+            if (int.Parse(dateParts[1]) < currentYear || (int.Parse(dateParts[1]) == currentYear && int.Parse(dateParts[0]) < currentMonth))
+            {
+                return new ValidationResult("Card has expired.");
+            }
         }
-        return true;
+
+        return ValidationResult.Success;
     }
 }

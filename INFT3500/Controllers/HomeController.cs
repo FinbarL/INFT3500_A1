@@ -17,7 +17,7 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Policy = "RequireStaffRole")]
     [HttpGet("[action]")]
     public async Task<IActionResult> AdminPage()
     {
@@ -25,7 +25,7 @@ public class HomeController : Controller
         return View(userList);
     }
     
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Policy = "RequireStaffRole")]
     [HttpPost("[action]")]
     public async Task<IActionResult> AdminPage(string searchString)
     {

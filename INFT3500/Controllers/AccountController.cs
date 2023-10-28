@@ -502,12 +502,11 @@ public class AccountController : Controller
 
         if (user.IsAdmin == true)
         {
-            Console.WriteLine("Test");
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            claims.Add(new Claim(ClaimTypes.Role, "Staff"));
         }
         else if (user.IsStaff == true)
         {
-            Console.WriteLine("Test");
             claims.Add(new Claim(ClaimTypes.Role, "Staff"));
         }
         else

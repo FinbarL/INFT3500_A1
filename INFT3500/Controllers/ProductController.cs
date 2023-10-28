@@ -238,9 +238,20 @@ public class ProductController : Controller
     [HttpPost("[action]")]
     public async Task<IActionResult> RemoveItem(int productId)
     {
-        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var product = await _dbContext.Products
+            .Include(p => p.GenreNavigation)
+            .Include(p => p.Stocktakes).ThenInclude(s => s.Source)
+            .Where(p => p.Id == productId).FirstOrDefaultAsync();
         if (product != null)
         {
+            var stocktake = product.Stocktakes.FirstOrDefault();
+            var productsInOrderCount = _dbContext.ProductsInOrders.Where(p => p.ProduktId == stocktake.ItemId)
+                .Sum(pio => pio.Quantity);
+            if(productsInOrderCount > 0)
+            {
+                TempData["ErrorMessage"] = "Cannot delete product with orders! If you wish to remove this product from user view, please reduce the quantity to 0.";
+                return RedirectToAction("EditItem", "Product", new { id = productId });
+            }
             _dbContext.Products.Remove(product);
             var stocktakes = _dbContext.Stocktakes.Where(s => s.ProductId == productId);
             _dbContext.Stocktakes.RemoveRange(stocktakes);

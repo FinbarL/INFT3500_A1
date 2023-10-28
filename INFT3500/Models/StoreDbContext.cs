@@ -265,7 +265,7 @@ public partial class StoreDbContext : DbContext
         if (!adminExists)
         {
             Console.WriteLine("CREATING ADMIN");
-            await CreateUser("admin", "admin@admin.com", "admin", true, false);
+            await CreateUser("admin", "admin@admin.com", "admin", true, true);
         }
 
         if (!staffExists)
