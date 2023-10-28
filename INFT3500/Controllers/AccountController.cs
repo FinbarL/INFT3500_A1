@@ -83,7 +83,8 @@ public class AccountController : Controller
     [HttpGet("[action]")]
     public IActionResult Register()
     {
-        return View();
+        var model = new RegisterViewModel();
+        return View(model);
     }
 
     [Authorize]
