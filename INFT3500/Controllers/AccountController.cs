@@ -271,7 +271,6 @@ public class AccountController : Controller
         return RedirectToAction("AdminPage", "Home");
     }
 
-    //UPDATE PASSWORD FOR USER
     [Authorize]
     [HttpGet]
     public IActionResult UpdatePassword()
