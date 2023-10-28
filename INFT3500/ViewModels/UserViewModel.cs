@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace INFT3500.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
-
-public class UserViewModel
+[CreditCardDetailsValidation]
+public class UserViewModel : ICreditCardDetails
 {
     public string? UserName { get; set; }
     public string? Name { get; set; }
@@ -28,15 +28,19 @@ public class UserViewModel
     public string? Suburb { get; set; }
     [Required]
     public string? State { get; set; }
+
     [Required]
     [CreditCard(ErrorMessage = "Card Number is not valid.")]
     public string? CardNumber { get; set; }
+
     [Required]
     public string? CardOwner { get; set; }
+
     [Required]
     [RegularExpression(@"^(0[1-9]|1[0-2])\/?([0-9]{2})$", ErrorMessage = "Card Expiry must be in MM/YY format.")]
     [ValidCardExpiry(ErrorMessage = "Card has expired.")]
     public string? CardExpiry { get; set; }
+
     [Required]
     [RegularExpression(@"^\d+$", ErrorMessage = "Card CVV should contain numbers only.")]
     [StringLength(3, ErrorMessage = "Card CVV should be 3 digits.")]

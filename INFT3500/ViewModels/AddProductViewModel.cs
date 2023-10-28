@@ -21,7 +21,6 @@ public class AddProductViewModel
     public string? SubGenre { get; set; }
     [Required]
     public DateTime? Published { get; set; }
-    [Required]
     public int? StocktakeSourceId { get; set; }
     [Required]
     public int? StocktakeQuantity { get; set; }

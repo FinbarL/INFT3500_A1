@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace INFT3500.ViewModels;
 
 [CreditCardDetailsValidation]
-public class UpdateUserViewModel
+public class UpdateUserViewModel : ICreditCardDetails
 {
     public string UserName { get; set; }
     public string Email { get; set; }
@@ -62,17 +62,22 @@ public class CreditCardDetailsValidation : ValidationAttribute
 {
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        var updateUserViewModel = validationContext.ObjectInstance as UpdateUserViewModel;
-        if (updateUserViewModel == null)
+        var creditCardDetails = validationContext.ObjectInstance as ICreditCardDetails;
+
+        if (creditCardDetails == null && validationContext.ObjectInstance is CartPageViewModel cartPageViewModel)
+        {
+            creditCardDetails = cartPageViewModel.User;
+        }
+
+        if (creditCardDetails == null)
         {
             return new ValidationResult("Invalid context.");
         }
 
-        bool cardNumberEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardNumber);
-        bool cardOwnerEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardOwner);
-        bool cardExpiryEmpty = string.IsNullOrWhiteSpace(updateUserViewModel.CardExpiry);
+        bool cardNumberEmpty = string.IsNullOrWhiteSpace(creditCardDetails.CardNumber);
+        bool cardOwnerEmpty = string.IsNullOrWhiteSpace(creditCardDetails.CardOwner);
+        bool cardExpiryEmpty = string.IsNullOrWhiteSpace(creditCardDetails.CardExpiry);
 
-        // If one is filled, all should be filled
         if (cardNumberEmpty != cardOwnerEmpty || cardNumberEmpty != cardExpiryEmpty)
         {
             return new ValidationResult("Card details should be either all filled or all left empty.");
@@ -81,18 +86,18 @@ public class CreditCardDetailsValidation : ValidationAttribute
         return ValidationResult.Success;
     }
 }
+
 public class ValidCardExpiry : ValidationAttribute
 {
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        var updateUserViewModel = validationContext.ObjectInstance as UpdateUserViewModel;
-        if (updateUserViewModel == null)
+        var creditCardDetails = validationContext.ObjectInstance as ICreditCardDetails;
+        if (creditCardDetails == null)
         {
             return new ValidationResult("Invalid context.");
         }
 
-        // If CardExpiry is provided, validate it
-        if (!string.IsNullOrWhiteSpace(updateUserViewModel.CardExpiry))
+        if (!string.IsNullOrWhiteSpace(creditCardDetails.CardExpiry))
         {
             var expiry = value as string;
 
@@ -114,4 +119,10 @@ public class ValidCardExpiry : ValidationAttribute
 
         return ValidationResult.Success;
     }
+}
+public interface ICreditCardDetails
+{
+    string CardNumber { get; set; }
+    string CardOwner { get; set; }
+    string CardExpiry { get; set; }
 }

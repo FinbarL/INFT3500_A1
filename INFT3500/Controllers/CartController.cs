@@ -292,6 +292,11 @@ public class CartController : Controller
         {
             var cart = SessionHelper.GetObjectFromSession<List<CartViewModel>>(HttpContext.Session, "cart");
             cartPageViewModel.Products = cart;
+            Console.WriteLine("ERROR!");
+            foreach(var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
         }
 
         return View(cartPageViewModel);

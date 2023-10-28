@@ -104,7 +104,8 @@ public class ProductController : Controller
         Console.WriteLine("Called");
         var model = new AddProductViewModel
         {
-            Genre = 1
+            Genre = 1,
+            StocktakeSourceId = 1,
         };
         return View(model);
     }
@@ -116,7 +117,6 @@ public class ProductController : Controller
         IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
         Console.WriteLine(allErrors);
 
-        Console.WriteLine(new DateTime());
         if (ModelState.IsValid)
         {
             var newProduct = new Product

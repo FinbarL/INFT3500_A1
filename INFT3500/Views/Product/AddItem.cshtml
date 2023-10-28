@@ -84,6 +84,8 @@
                 <input asp-for="StocktakePrice" class="form-control"/>
                 <span asp-validation-for="StocktakePrice" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="StocktakeSourceId"/>
+            <input type="hidden" asp-for="Id"/>
             <button type="submit" class="btn btn-primary mt-3">Add Product</button>
         </form>
     </div>

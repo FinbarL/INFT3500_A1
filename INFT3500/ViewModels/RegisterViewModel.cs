@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace INFT3500.ViewModels;
-
-public class RegisterViewModel
+[CreditCardDetailsValidation]
+public class RegisterViewModel : ICreditCardDetails
 {
     [Required(ErrorMessage = "Please enter your username or email.")]
     public string UserName { get; set; }
@@ -41,19 +41,15 @@ public class RegisterViewModel
 
     [Required]
     public string State { get; set; }
-    [Required]
     [CreditCard(ErrorMessage = "Card Number is not valid.")]
-    public string CardNumber { get; set; }
-    [Required]
-    public string CardOwner { get; set; }
-    [Required]
+    public string? CardNumber { get; set; }
+    public string? CardOwner { get; set; }
     [RegularExpression(@"^(0[1-9]|1[0-2])\/?([0-9]{2})$", ErrorMessage = "Card Expiry must be in MM/YY format.")]
     [ValidCardExpiry(ErrorMessage = "Card has expired.")]
-    public string CardExpiry { get; set; }
-    [Required]
+    public string? CardExpiry { get; set; }
     [RegularExpression(@"^\d+$", ErrorMessage = "Card CVV should contain numbers only.")]
     [StringLength(3, ErrorMessage = "Card CVV should be 3 digits.")]
-    public string CardCVV { get; set; }
+    public string? CardCVV { get; set; }
 
     public List<SelectListItem> States => new List<SelectListItem>
     {
