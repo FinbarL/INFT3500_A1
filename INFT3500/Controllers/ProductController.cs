@@ -87,9 +87,13 @@ public class ProductController : Controller
         foreach (var productStocktake in productStocktakeList)
         {
             var product = products.First(p => p.ProductId == productStocktake.Key);
-            product.Quantity -= productStocktake.Value;
+            var productQty = Math.Min(0, product.Quantity - productStocktake.Value);
+            product.Quantity = productQty;
         }
-
+        if (User.Identity.IsAuthenticated && !User.IsInRole("Admin") && !User.IsInRole("Staff"))
+        {
+            products = products.Where(p => p.Quantity > 0).ToList();
+        }
         return products;
     }
 
